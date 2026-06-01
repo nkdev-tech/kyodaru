@@ -61,6 +61,11 @@ BottomNavigation
 | AI | Google Gemini API（gemini-2.0-flash、無料枠） |
 | 天気・気圧 | Open-Meteo API（無料） |
 | APIクライアント生成 | orval |
+| Linter/Formatter（api） | Biome |
+| Linter/Formatter（mobile） | ESLint + Prettier |
+| テスト（api） | Vitest |
+| テスト（mobile） | Jest（設定のみ、必要に応じて追加） |
+| CI | GitHub Actions |
 
 ## DB設計
 
