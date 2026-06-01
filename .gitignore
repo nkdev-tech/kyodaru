@@ -1,0 +1,15 @@
+node_modules/
+
+# Cloudflare Workers
+.wrangler/
+dist/
+.dev.vars
+
+# Expo / React Native
+.expo/
+ios/
+android/
+
+# env
+.env
+.env.local

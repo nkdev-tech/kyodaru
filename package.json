@@ -1,0 +1,25 @@
+{
+  "name": "kyodaru",
+  "version": "1.0.0",
+  "description": "ぼやくだけで体調が記録されるAI対話型アプリ。",
+  "homepage": "https://github.com/nkdev-tech/kyodaru#readme",
+  "bugs": {
+    "url": "https://github.com/nkdev-tech/kyodaru/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nkdev-tech/kyodaru.git"
+  },
+  "private": true,
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "workspaces": [
+    "api",
+    "mobile"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
