@@ -53,7 +53,7 @@ BottomNavigation
 
 | レイヤー | 技術 |
 |---|---|
-| モバイル | Expo / React Native / NativeWind |
+| モバイル | Expo / React Native / NativeWind / React Native Reusables |
 | API | Hono + @hono/zod-openapi / Cloudflare Workers |
 | DB | Cloudflare D1（SQLite）/ Drizzle ORM |
 | 認証 | better-auth + @better-auth/expo + expo-secure-store |
@@ -72,7 +72,7 @@ BottomNavigation
 | user_id | TEXT | FK |
 | raw_text | TEXT | 元のぼやき全文 |
 | summary | TEXT | AI要約 |
-| condition_level | INTEGER | 体調レベル（1〜4、AIが判定） |
+| condition_level | INTEGER | 体調レベル（1〜5、AIが判定） |
 | pressure | REAL | 気圧（hPa） |
 | weather | TEXT | 天気 |
 | logged_at | INTEGER | 記録日時（1日複数記録可） |
