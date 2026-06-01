@@ -8,14 +8,22 @@
     "format": "biome format . --write",
     "check": "biome check .",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
     "hono": "^4.12.23"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.16",
+    "@cloudflare/workers-types": "^4.20260601.1",
+    "@types/node": "^25.9.1",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.22.4",
     "vitest": "^4.1.7",
-    "wrangler": "^4.4.0"
+    "wrangler": "^4.95.0"
   }
 }
