@@ -27,6 +27,11 @@ npm workspaces でモノレポ管理。
 | AI | Google Gemini API（gemini-2.0-flash） |
 | 天気・気圧 | Open-Meteo API |
 | APIクライアント生成 | orval |
+| Linter/Formatter（api） | Biome |
+| Linter/Formatter（mobile） | ESLint + Prettier |
+| テスト（api） | Vitest |
+| テスト（mobile） | Jest（設定のみ） |
+| CI | GitHub Actions |
 
 ## 開発方針
 
