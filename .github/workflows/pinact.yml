@@ -1,0 +1,15 @@
+name: pinact
+
+on: [pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  pinact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: suzuki-shunsuke/pinact-action@v2
+        with:
+          verify: true
