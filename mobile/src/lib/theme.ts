@@ -1,5 +1,8 @@
 import { DarkTheme, DefaultTheme, type Theme } from '@react-navigation/native';
 
+// NativeWind は src/global.css の CSS カスタムプロパティを使用し、
+// React Navigation は JS オブジェクトを必要とするため二重定義になっている。
+// 値を変更する場合は src/global.css と両方を更新すること。
 export const THEME = {
   light: {
     background: 'hsl(0 0% 100%)',
