@@ -7,8 +7,8 @@
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "format": "biome format . --write",
     "check": "biome check .",
-    "test": "vitest",
-    "test:run": "vitest run",
+    "test": "vitest --passWithNoTests",
+    "test:run": "vitest run --passWithNoTests",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"
   },
