@@ -68,7 +68,7 @@ npm run android   # Android エミュレーター
 
 ## DB設計
 
-### logs（ぼやきの記録）
+### entries（ぼやきの記録）
 | カラム | 型 | 内容 |
 |---|---|---|
 | id | TEXT | PK |
@@ -78,7 +78,7 @@ npm run android   # Android エミュレーター
 | condition_level | INTEGER | 体調レベル（1〜5） |
 | pressure | REAL | 気圧（hPa） |
 | weather | TEXT | 天気 |
-| logged_at | INTEGER | 記録日時 |
+| created_at | INTEGER | 記録日時 |
 
 ### medicines（薬マスタ）
 | カラム | 型 | 内容 |
@@ -89,11 +89,11 @@ npm run android   # Android エミュレーター
 | color | TEXT | アイコン色（例：#FF6B6B） |
 | created_at | INTEGER | 作成日時 |
 
-### medicine_logs（服用記録）
+### medicine_entries（服用記録）
 | カラム | 型 | 内容 |
 |---|---|---|
 | id | TEXT | PK |
-| log_id | TEXT | FK → logs |
+| entry_id | TEXT | FK → entries |
 | medicine_id | TEXT | FK → medicines |
 
 ※ 認証関連テーブルは better-auth が自動生成
