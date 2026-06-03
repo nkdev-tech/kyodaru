@@ -15,16 +15,16 @@ export default function AppTabs() {
     >
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>ホーム</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf="house" />
+        <NativeTabs.Trigger.Icon sf="house" md="home" />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="calendar">
         <NativeTabs.Trigger.Label>カレンダー</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf="calendar" />
+        <NativeTabs.Trigger.Icon sf="calendar" md="calendar_month" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <NativeTabs.Trigger.Label>設定</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf="gearshape" />
+        <NativeTabs.Trigger.Icon sf="gearshape" md="settings" />
       </NativeTabs.Trigger>
     </NativeTabs>
   );
