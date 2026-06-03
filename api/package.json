@@ -10,7 +10,8 @@
     "test": "vitest --passWithNoTests",
     "test:run": "vitest run --passWithNoTests",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "db:migrate:local": "wrangler d1 migrations apply kyodaru --local"
   },
   "dependencies": {
     "@hono/zod-openapi": "^1.4.0",
