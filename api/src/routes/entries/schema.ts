@@ -8,4 +8,18 @@ const entrySchema = z.object({
     .openapi({ example: new Date('2026-01-01T00:00:00.000Z') }),
 })
 
+const inputEntrySchema = z.object({
+  rawText: z.string().min(1).openapi({ example: '今日もだるい' }),
+})
+
 export const getEntriesSchema = entrySchema.array()
+export const createEntryReqSchema = inputEntrySchema
+export const createEntryResSchema = entrySchema
+
+export const errorResBodySchema = z.object({
+  success: z.boolean(),
+  error: z.object({
+    name: z.string(),
+    message: z.string().openapi({ example: 'Bad Request' }),
+  }),
+})

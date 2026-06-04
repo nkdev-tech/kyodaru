@@ -16,4 +16,28 @@ describe('entries', () => {
     const res = await client.api.entries.$get()
     expect(res.status).toBe(200)
   })
+
+  it('can create entry', async () => {
+    const mockEntry = {
+      id: '1',
+      rawText: '今日もだるい',
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+    }
+    vi.mocked(EntryRepository.create).mockResolvedValue(mockEntry)
+    const res = await client.api.entries.$post({
+      json: {
+        rawText: '今日もだるい',
+      },
+    })
+    expect(res.status).toBe(201)
+  })
+
+  it('cannnot create entry with invalid value', async () => {
+    const res = await client.api.entries.$post({
+      json: {
+        rawText: '',
+      },
+    })
+    expect(res.status).toBe(400)
+  })
 })
