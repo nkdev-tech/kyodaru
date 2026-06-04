@@ -13,3 +13,6 @@ android/
 # env
 .env
 .env.local
+
+# Design prototypes
+ui_kits/
