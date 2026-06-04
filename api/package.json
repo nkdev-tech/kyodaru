@@ -10,14 +10,18 @@
     "test": "vitest --passWithNoTests",
     "test:run": "vitest run --passWithNoTests",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "db:migrate:local": "wrangler d1 migrations apply kyodaru --local"
   },
   "dependencies": {
+    "@hono/zod-openapi": "^1.4.0",
     "drizzle-orm": "^0.45.2",
-    "hono": "^4.12.23"
+    "hono": "^4.12.23",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.16",
+    "@cloudflare/vitest-pool-workers": "^0.16.12",
     "@types/node": "^25.9.1",
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",

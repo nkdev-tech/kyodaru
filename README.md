@@ -69,7 +69,7 @@ BottomNavigation
 
 ## DB設計
 
-### logs（ぼやきの記録）
+### entries（ぼやきの記録）
 
 | カラム | 型 | 内容 |
 |---|---|---|
@@ -80,7 +80,7 @@ BottomNavigation
 | condition_level | INTEGER | 体調レベル（1〜5、AIが判定） |
 | pressure | REAL | 気圧（hPa） |
 | weather | TEXT | 天気 |
-| logged_at | INTEGER | 記録日時（1日複数記録可） |
+| created_at | INTEGER | 記録日時（1日複数記録可） |
 
 ### medicines（薬マスタ）
 
@@ -92,12 +92,12 @@ BottomNavigation
 | color | TEXT | アイコン色（例：#FF6B6B） |
 | created_at | INTEGER | 作成日時 |
 
-### medicine_logs（服用記録）
+### medicine_entries（服用記録）
 
 | カラム | 型 | 内容 |
 |---|---|---|
 | id | TEXT | PK |
-| log_id | TEXT | FK → logs |
+| entry_id | TEXT | FK → entries |
 | medicine_id | TEXT | FK → medicines |
 
 ※ 認証関連テーブルは better-auth が自動生成
@@ -106,8 +106,8 @@ BottomNavigation
 
 ```
 kyodaru/
-├── api/      # Hono（techbook-logから流用）
-├── mobile/   # Expo（新規）
+├── api/      # Hono
+├── mobile/   # Expo
 ├── docs/
 └── README.md
 ```
