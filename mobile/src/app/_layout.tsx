@@ -24,7 +24,7 @@ const queryClient = new QueryClient();
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     ZenMaruGothic_700Bold,
     MPLUSRounded1c_400Regular,
     MPLUSRounded1c_500Medium,
@@ -32,10 +32,10 @@ export default function TabLayout() {
   });
 
   useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync();
-  }, [fontsLoaded]);
+    if (fontsLoaded || fontError) SplashScreen.hideAsync();
+  }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded) return null;
+  if (!fontsLoaded && !fontError) return null;
 
   return (
     <QueryClientProvider client={queryClient}>

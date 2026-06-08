@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePostApiEntries } from '@/external/api';
 import { UserChat } from '@/components/entries/chat';
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Textarea } from '@/components/ui/textarea';
 import { Text } from '@/components/ui/text';
+import { View } from '@/components/ui/view';
 import { MessageCircleMore, Send, X } from 'lucide-react-native';
 
 export default function HomeScreen() {
@@ -36,7 +37,11 @@ export default function HomeScreen() {
         },
       },
       {
-        onSuccess() {
+        onSuccess(result) {
+          if (result.status !== 201) {
+            Alert.alert('エラー', '送信に失敗しました。もう一度お試しください。');
+            return;
+          }
           setChatVisible(false);
           setMessages([]);
         },
@@ -60,7 +65,7 @@ export default function HomeScreen() {
       </SafeAreaView>
       <Modal visible={chatVisible} animationType="slide" transparent onRequestClose={handleClose}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1 }}
         >
           <SafeAreaView className="flex-1 bg-background">
