@@ -32,7 +32,11 @@ export default function TabLayout() {
   });
 
   useEffect(() => {
-    if (fontsLoaded || fontError) SplashScreen.hideAsync();
+    if (fontsLoaded || fontError) {
+      (async () => {
+        await SplashScreen.hideAsync();
+      })();
+    }
   }, [fontsLoaded, fontError]);
 
   if (!fontsLoaded && !fontError) return null;
