@@ -1,5 +1,5 @@
-import { View } from 'react-native';
 import { Text } from '@/components/ui/text';
+import { View } from '@/components/ui/view';
 
 type Props = {
   message: string;
