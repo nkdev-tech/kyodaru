@@ -12,7 +12,7 @@ app.doc('/doc', {
   openapi: '3.0.0',
   info: {
     version: '1.0.0',
-    title: 'Techbook Log API',
+    title: '今日もだるい API',
   },
 })
 
