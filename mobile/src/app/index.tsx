@@ -15,7 +15,7 @@ export default function HomeScreen() {
   const [messages, setMessages] = useState<string[]>([]);
   const [draft, setDraft] = useState('');
   const [inputKey, setInputKey] = useState(0);
-  const { mutate } = usePostApiEntries();
+  const { mutate, isPending } = usePostApiEntries();
 
   const handleSend = () => {
     if (!draft.trim()) return;
@@ -25,6 +25,7 @@ export default function HomeScreen() {
   };
 
   const handleClose = () => {
+    if (isPending) return;
     if (messages.length === 0) {
       setChatVisible(false);
       return;
@@ -44,6 +45,7 @@ export default function HomeScreen() {
           }
           setChatVisible(false);
           setMessages([]);
+          setDraft('');
         },
         onError() {
           Alert.alert('エラー', '送信に失敗しました。もう一度お試しください。');
@@ -87,7 +89,13 @@ export default function HomeScreen() {
                 placeholder="いまのぐあい、ぼやいてみてください..."
                 className="h-auto min-h-10 flex-1 bg-white"
               />
-              <Button variant="default" size="icon" onPress={handleSend} className="rounded-full">
+              <Button
+                variant="default"
+                size="icon"
+                onPress={handleSend}
+                disabled={isPending}
+                className="rounded-full"
+              >
                 <Icon as={Send} />
               </Button>
             </View>
