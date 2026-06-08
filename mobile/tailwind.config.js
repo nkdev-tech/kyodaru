@@ -42,6 +42,12 @@ module.exports = {
           foreground: 'hsl(var(--card-foreground))',
         },
       },
+      fontFamily: {
+        display: ['ZenMaruGothic_700Bold'],
+        body: ['MPLUSRounded1c_400Regular'],
+        'body-medium': ['MPLUSRounded1c_500Medium'],
+        'body-bold': ['MPLUSRounded1c_700Bold'],
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
