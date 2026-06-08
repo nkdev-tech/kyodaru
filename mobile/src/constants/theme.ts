@@ -14,6 +14,7 @@ export const Colors = {
     backgroundElement: '#F4F8FC', // surface-2
     backgroundSelected: '#D2E9F2', // primary-soft
     textSecondary: '#687686', // ink-2
+    primary: '#4FA3C7', // --primary
   },
   dark: {
     text: '#DCE4EF',
@@ -21,6 +22,7 @@ export const Colors = {
     backgroundElement: '#243040',
     backgroundSelected: '#2F4060',
     textSecondary: '#8A96A6',
+    primary: '#4FA3C7', // --primary (light/dark 共通)
   },
 } as const;
 
