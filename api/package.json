@@ -14,6 +14,7 @@
     "db:migrate:local": "wrangler d1 migrations apply kyodaru --local"
   },
   "dependencies": {
+    "@google/genai": "^2.8.0",
     "@hono/swagger-ui": "^0.6.1",
     "@hono/zod-openapi": "^1.4.0",
     "drizzle-orm": "^0.45.2",
@@ -22,7 +23,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.16",
-    "@cloudflare/vitest-pool-workers": "^0.16.12",
+    "@cloudflare/vitest-pool-workers": "^0.16.14",
     "@types/node": "^25.9.1",
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",

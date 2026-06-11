@@ -1,5 +1,6 @@
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
+import ai from './routes/ai'
 import entries from './routes/entries'
 
 const app = new OpenAPIHono()
@@ -18,7 +19,7 @@ app.doc('/doc', {
 
 app.get('/ui', swaggerUI({ url: '/doc' }))
 
-const route = app.route('/api/entries', entries)
+const route = app.route('/api/entries', entries).route('/api/ai', ai)
 
 export type AppType = typeof route
 

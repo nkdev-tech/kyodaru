@@ -10,5 +10,6 @@
       "database_id": "35aab599-2218-4ba5-87db-0210a59320c1",
       "migrations_dir": "drizzle"
     }
-  ]
+  ],
+  "rules": [{ "type": "Text", "globs": ["**/*.md"] }]
 }

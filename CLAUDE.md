@@ -24,7 +24,7 @@ npm workspaces でモノレポ管理。
 | DB | Cloudflare D1（SQLite）/ Drizzle ORM |
 | 認証 | better-auth + @better-auth/expo + expo-secure-store |
 | 状態管理 | TanStack Query |
-| AI | Google Gemini API（gemini-2.0-flash） |
+| AI | Google Gemini API（gemini-3.1-flash-lite） |
 | 天気・気圧 | Open-Meteo API |
 | APIクライアント生成 | orval |
 | Linter/Formatter（api） | Biome |
