@@ -25,7 +25,7 @@ const getChatReplyRoute = createRoute({
           schema: getChatReplyResSchema,
         },
       },
-      description: 'Create a entry',
+      description: 'AI reply',
     },
     400: {
       content: {
@@ -35,6 +35,14 @@ const getChatReplyRoute = createRoute({
       },
       description: 'Bad Request',
     },
+    500: {
+      content: {
+        'application/json': {
+          schema: errorResBodySchema,
+        },
+      },
+      description: 'Internal Server Error',
+    },
   },
 })
 
@@ -42,8 +50,22 @@ const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>().openapi(
   getChatReplyRoute,
   async (c) => {
     const data = c.req.valid('json')
-    const res = await getChatReply(c.env.GEMINI_API_KEY, data.messages)
-    return c.json(res, 200)
+    try {
+      const res = await getChatReply(c.env.GEMINI_API_KEY, data.messages)
+      return c.json(res, 200)
+    } catch (e) {
+      console.error(e)
+      return c.json(
+        {
+          success: false,
+          error: {
+            name: 'Internal Server Error',
+            message: 'サーバーエラーが発生しました',
+          },
+        },
+        500,
+      )
+    }
   },
 )
 

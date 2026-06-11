@@ -1,9 +1,11 @@
 import { GoogleGenAI } from '@google/genai'
+import type { z } from '@hono/zod-openapi'
+import type { getChatReplyReqSchema } from '../../../routes/ai/schema'
 import chatPrompt from '../prompts/chat.md'
 
 export const getChatReply = async (
   apiKey: string,
-  messages: Array<{ role: 'user' | 'model'; text: string }>,
+  messages: z.infer<typeof getChatReplyReqSchema>['messages'],
 ): Promise<{ reply: string }> => {
   const ai = new GoogleGenAI({ apiKey })
   const response = await ai.models.generateContent({
@@ -13,7 +15,10 @@ export const getChatReply = async (
       parts: [{ text: m.text }],
     })),
     config: {
-      systemInstruction: chatPrompt,
+      systemInstruction: chatPrompt.replace(
+        '{{timestamp}}',
+        new Date().toISOString(),
+      ),
     },
   })
   if (!response.text) {
