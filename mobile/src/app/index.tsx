@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { usePostApiEntries } from '@/external/api';
-import { UserChat } from '@/components/entries/chat';
+import { usePostApiAi, usePostApiEntries } from '@/external/api';
+import { AIChat, UserChat } from '@/components/entries/chat';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,29 +12,67 @@ import { MessageCircleMore, Send, X } from 'lucide-react-native';
 
 export default function HomeScreen() {
   const [chatVisible, setChatVisible] = useState(false);
-  const [messages, setMessages] = useState<string[]>([]);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([]);
   const [draft, setDraft] = useState('');
   const [inputKey, setInputKey] = useState(0);
-  const { mutate, isPending } = usePostApiEntries();
+  const { mutate: mutateEntry, isPending: isPendingEntry } = usePostApiEntries();
+  const { mutate: mutateReply, isPending: isPendingReply } = usePostApiAi();
+
+  useEffect(() => {
+    if (chatVisible) {
+      const timer = setTimeout(() => {
+        setMessages([{ role: 'model', text: '今日の体調はいかがですか？' }]);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [chatVisible]);
 
   const handleSend = () => {
     if (!draft.trim()) return;
-    setMessages((prev) => [...prev, draft.trim()]);
+    const newMessage = [...messages, { role: 'user' as const, text: draft.trim() }];
+    setMessages(newMessage);
     setDraft('');
     setInputKey((k) => k + 1);
+
+    mutateReply(
+      {
+        data: {
+          messages: newMessage,
+        },
+      },
+      {
+        onSuccess(result) {
+          if (result.status !== 200) {
+            Alert.alert('エラー', '送信に失敗しました。もう一度お試しください。');
+            return;
+          }
+          const replies = result.data.reply.split('\n\n').filter((t) => t.trim());
+          setMessages((prev) => [
+            ...prev,
+            ...replies.map((text) => ({ role: 'model' as const, text })),
+          ]);
+        },
+        onError() {
+          Alert.alert('エラー', '送信に失敗しました。もう一度お試しください。');
+        },
+      },
+    );
   };
 
   const handleClose = () => {
-    if (isPending) return;
-    if (messages.length === 0) {
+    if (isPendingEntry) return;
+    if (!messages.some((m) => m.role === 'user')) {
       setChatVisible(false);
       return;
     }
 
-    mutate(
+    mutateEntry(
       {
         data: {
-          rawText: messages.join('\n\n---\n\n'),
+          rawText: messages
+            .map((m) => `${m.role === 'model' ? 'AI' : 'ユーザー'}: ${m.text}`)
+            .join('\n\n---\n\n'),
         },
       },
       {
@@ -72,14 +110,29 @@ export default function HomeScreen() {
         >
           <SafeAreaView className="flex-1 bg-background">
             <View className="flex-row justify-end p-2">
-              <Button variant="ghost" size="icon" className="rounded-full" onPress={handleClose}>
-                <Icon as={X} />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-12 w-12 rounded-full"
+                onPress={handleClose}
+                disabled={isPendingEntry || isPendingReply}
+              >
+                <Icon as={X} className="h-6 w-6" />
               </Button>
             </View>
-            <ScrollView className="flex-1 px-4">
-              {messages.map((msg, i) => (
-                <UserChat key={i} message={msg} />
-              ))}
+            <ScrollView
+              ref={scrollViewRef}
+              className="flex-1 px-4"
+              onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+            >
+              {messages.map((msg, i) =>
+                msg.role === 'user' ? (
+                  <UserChat key={i} message={msg.text} />
+                ) : (
+                  <AIChat key={i} message={msg.text} hideIcon={messages[i - 1]?.role === 'model'} />
+                ),
+              )}
+              {isPendingReply && <AIChat message="..." />}
             </ScrollView>
             <View className="flex-row items-end gap-2 p-4">
               <Textarea
@@ -93,7 +146,7 @@ export default function HomeScreen() {
                 variant="default"
                 size="icon"
                 onPress={handleSend}
-                disabled={isPending}
+                disabled={isPendingEntry || isPendingReply}
                 className="rounded-full"
               >
                 <Icon as={Send} />

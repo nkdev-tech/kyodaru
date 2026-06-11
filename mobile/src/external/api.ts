@@ -50,6 +50,39 @@ export type PostApiEntries400 = {
   error: PostApiEntries400Error;
 };
 
+export type PostApiAiBodyMessagesItemRole = typeof PostApiAiBodyMessagesItemRole[keyof typeof PostApiAiBodyMessagesItemRole];
+
+
+export const PostApiAiBodyMessagesItemRole = {
+  user: 'user',
+  model: 'model',
+} as const;
+
+export type PostApiAiBodyMessagesItem = {
+  role: PostApiAiBodyMessagesItemRole;
+  /** @minLength 1 */
+  text: string;
+};
+
+export type PostApiAiBody = {
+  /** @minItems 1 */
+  messages: PostApiAiBodyMessagesItem[];
+};
+
+export type PostApiAi200 = {
+  reply: string;
+};
+
+export type PostApiAi400Error = {
+  name: string;
+  message: string;
+};
+
+export type PostApiAi400 = {
+  success: boolean;
+  error: PostApiAi400Error;
+};
+
 export type getApiEntriesResponse200 = {
   data: GetApiEntries200Item[]
   status: 200
@@ -252,4 +285,94 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
         TContext
       > => {
       return useMutation(getPostApiEntriesMutationOptions(options), queryClient);
+    }
+
+export type postApiAiResponse200 = {
+  data: PostApiAi200
+  status: 200
+}
+
+export type postApiAiResponse400 = {
+  data: PostApiAi400
+  status: 400
+}
+
+export type postApiAiResponseSuccess = (postApiAiResponse200) & {
+  headers: Headers;
+};
+export type postApiAiResponseError = (postApiAiResponse400) & {
+  headers: Headers;
+};
+
+export type postApiAiResponse = (postApiAiResponseSuccess | postApiAiResponseError)
+
+export const getPostApiAiUrl = () => {
+
+
+
+
+  return `http://localhost:8787/api/ai`
+}
+
+export const postApiAi = async (postApiAiBody?: PostApiAiBody, options?: RequestInit): Promise<postApiAiResponse> => {
+
+  const res = await fetch(getPostApiAiUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(postApiAiBody)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: postApiAiResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as postApiAiResponse
+}
+
+
+
+
+export const getPostApiAiMutationOptions = <TError = PostApiAi400,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAi>>, TError,{data?: PostApiAiBody}, TContext>, fetch?: RequestInit}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiAi>>, TError,{data?: PostApiAiBody}, TContext> => {
+
+const mutationKey = ['postApiAi'];
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, fetch: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAi>>, {data?: PostApiAiBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postApiAi(data,fetchOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiAiMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAi>>>
+    export type PostApiAiMutationBody = PostApiAiBody | undefined
+    export type PostApiAiMutationError = PostApiAi400
+
+    export const usePostApiAi = <TError = PostApiAi400,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAi>>, TError,{data?: PostApiAiBody}, TContext>, fetch?: RequestInit}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiAi>>,
+        TError,
+        {data?: PostApiAiBody},
+        TContext
+      > => {
+      return useMutation(getPostApiAiMutationOptions(options), queryClient);
     }
