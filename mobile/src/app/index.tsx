@@ -21,6 +21,8 @@ export default function HomeScreen() {
 
   useEffect(() => {
     if (chatVisible) {
+      // チャット画面が表示されてから少し遅らせて初期メッセージを出し、
+      // AIが返答しているように見せる演出
       const timer = setTimeout(() => {
         setMessages([{ role: 'model', text: '今日の体調はいかがですか？' }]);
       }, 500);
