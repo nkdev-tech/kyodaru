@@ -3,6 +3,7 @@ import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePostApiAi, usePostApiEntries } from '@/external/api';
 import { AIChat, UserChat } from '@/components/entries/chat';
+import { Mascot } from '@/components/Mascot';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,6 +13,7 @@ import { MessageCircleMore, Send, X } from 'lucide-react-native';
 
 export default function HomeScreen() {
   const [chatVisible, setChatVisible] = useState(false);
+  const [mascotKey, setMascotKey] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([]);
   const [draft, setDraft] = useState('');
@@ -66,6 +68,7 @@ export default function HomeScreen() {
     if (isPendingEntry) return;
     if (!messages.some((m) => m.role === 'user')) {
       setChatVisible(false);
+      setMascotKey((k) => k + 1);
       return;
     }
 
@@ -86,6 +89,7 @@ export default function HomeScreen() {
           setChatVisible(false);
           setMessages([]);
           setDraft('');
+          setMascotKey((k) => k + 1);
         },
         onError() {
           Alert.alert('エラー', '送信に失敗しました。もう一度お試しください。');
@@ -97,8 +101,8 @@ export default function HomeScreen() {
   return (
     <>
       <SafeAreaView className="flex-1 bg-background">
-        <View className="flex-1 items-center justify-center gap-8">
-          <Text>☁️</Text>
+        <View className="flex-1 items-center justify-center gap-6">
+          <Mascot key={mascotKey} />
           <Button className="rounded-full" onPress={() => setChatVisible(true)}>
             <Icon as={MessageCircleMore} className="text-primary-foreground" />
             <Text>タップしてぼやく</Text>
