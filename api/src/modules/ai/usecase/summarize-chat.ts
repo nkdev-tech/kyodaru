@@ -14,6 +14,7 @@ export async function summarizeChat(
         '{{timestamp}}',
         new Date().toISOString(),
       ),
+      responseMimeType: 'application/json',
     },
   })
   if (!response.text) {
