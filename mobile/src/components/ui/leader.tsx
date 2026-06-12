@@ -23,7 +23,10 @@ export function Leader() {
   }, [clock]);
 
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+    <View
+      style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+      accessibilityLabel="応答を生成中"
+    >
       {opacities.map((opacity, i) => (
         <Animated.View
           key={i}

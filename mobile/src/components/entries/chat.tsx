@@ -22,7 +22,7 @@ export function UserChat({ message }: Props) {
   );
 }
 
-function SeparateOptions(message?: string): { text: string; options: string[] } {
+function separateOptions(message?: string): { text: string; options: string[] } {
   if (!message) return { text: '', options: [] };
 
   const matches = [...message.matchAll(/([A-Z])\.\s*/g)];
@@ -50,7 +50,7 @@ function SeparateOptions(message?: string): { text: string; options: string[] } 
 }
 
 export function AIChat({ message, hideIcon, onSelect, disabled, isLoading }: Props) {
-  const { text, options } = SeparateOptions(message);
+  const { text, options } = separateOptions(message);
   return (
     <View className="mb-2 flex-row items-start justify-start gap-2">
       {hideIcon ? (
@@ -65,10 +65,10 @@ export function AIChat({ message, hideIcon, onSelect, disabled, isLoading }: Pro
       )}
       <View className="max-w-[76%] gap-1 rounded-2xl bg-accent px-4 py-3">
         {isLoading ? <Leader /> : text && <Text>{text}</Text>}
-        {options.map((option) => {
+        {options.map((option, i) => {
           return (
             <Button
-              key={option}
+              key={i}
               variant="secondary"
               className="h-auto"
               onPress={() => onSelect?.(option)}

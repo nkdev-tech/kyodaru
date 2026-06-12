@@ -145,7 +145,7 @@ export default function HomeScreen() {
                   />
                 ),
               )}
-              {isPendingReply && <AIChat isLoading={true} />}
+              {isPendingReply && <AIChat isLoading />}
             </ScrollView>
             <View className="flex-row items-end gap-2 p-4">
               <Textarea
@@ -153,7 +153,7 @@ export default function HomeScreen() {
                 value={draft}
                 onChangeText={setDraft}
                 placeholder="いまのぐあい、ぼやいてみてください..."
-                className="h-auto min-h-10 flex-1 bg-white"
+                className="h-auto min-h-10 flex-1 bg-card"
               />
               <Button
                 variant="default"
