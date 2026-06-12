@@ -2,25 +2,29 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
+import { Leader } from '@/components/ui/leader';
 
 type Props = {
-  message: string;
+  message?: string;
   hideIcon?: boolean;
   onSelect?: (option: string) => void;
   disabled?: boolean;
+  isLoading?: boolean;
 };
 
 export function UserChat({ message }: Props) {
   return (
     <View className="mb-2 items-end">
-      <View className="max-w-[76%] rounded-2xl bg-white px-4 py-3">
+      <View className="max-w-[76%] rounded-2xl bg-card px-4 py-3">
         <Text>{message}</Text>
       </View>
     </View>
   );
 }
 
-function SeparateOptions(message: string): { text: string; options: string[] } {
+function SeparateOptions(message?: string): { text: string; options: string[] } {
+  if (!message) return { text: '', options: [] };
+
   const matches = [...message.matchAll(/([A-Z])\.\s*/g)];
 
   const firstA = matches.findIndex((m) => m[1] === 'A');
@@ -45,7 +49,7 @@ function SeparateOptions(message: string): { text: string; options: string[] } {
   return { text, options };
 }
 
-export function AIChat({ message, hideIcon, onSelect, disabled }: Props) {
+export function AIChat({ message, hideIcon, onSelect, disabled, isLoading }: Props) {
   const { text, options } = SeparateOptions(message);
   return (
     <View className="mb-2 flex-row items-start justify-start gap-2">
@@ -59,11 +63,17 @@ export function AIChat({ message, hideIcon, onSelect, disabled }: Props) {
           </AvatarFallback>
         </Avatar>
       )}
-      <View className="max-w-[76%] rounded-2xl bg-accent px-4 py-3 gap-1">
-        {text && <Text>{text}</Text>}
+      <View className="max-w-[76%] gap-1 rounded-2xl bg-accent px-4 py-3">
+        {isLoading ? <Leader /> : text && <Text>{text}</Text>}
         {options.map((option) => {
           return (
-            <Button key={option} variant="secondary" className="h-auto" onPress={() => onSelect?.(option)} disabled={disabled}>
+            <Button
+              key={option}
+              variant="secondary"
+              className="h-auto"
+              onPress={() => onSelect?.(option)}
+              disabled={disabled}
+            >
               <Text>{option}</Text>
             </Button>
           );

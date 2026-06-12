@@ -145,7 +145,7 @@ export default function HomeScreen() {
                   />
                 ),
               )}
-              {isPendingReply && <AIChat message="..." />}
+              {isPendingReply && <AIChat isLoading={true} />}
             </ScrollView>
             <View className="flex-row items-end gap-2 p-4">
               <Textarea
