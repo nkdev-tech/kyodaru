@@ -55,14 +55,14 @@ const createEntryRoute = createRoute({
   },
 })
 
-const app = new OpenAPIHono()
+const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>()
   .openapi(getEntriesRoute, async (c) => {
     const res = await getEntries()
     return c.json(res, 200)
   })
   .openapi(createEntryRoute, async (c) => {
     const data = c.req.valid('json')
-    const res = await createEntry(data)
+    const res = await createEntry(c.env.GEMINI_API_KEY, data)
     return c.json(res, 201)
   })
 
