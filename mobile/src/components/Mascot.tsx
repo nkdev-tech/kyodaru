@@ -10,8 +10,9 @@ import Animated, {
 import Svg, { Ellipse, Path, Text as SvgText, TSpan } from 'react-native-svg';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
+import { THEME } from '@/lib/theme';
 
-export type MascotExpression = 'default' | 'smile' | 'shonbori' | 'sleep';
+type MascotExpression = 'default' | 'smile' | 'shonbori' | 'sleep';
 
 type ExpressionData = {
   cheekCy: number;
@@ -34,7 +35,7 @@ const CLOUD_BODY =
   'M52 104 C40 104 35 95 38 85 C35 73 46 65 58 68 C61 55 80 50 92 58 C102 50 120 53 125 67 C141 65 152 77 147 91 C155 98 151 110 138 112 C133 117 60 117 52 104 Z';
 const HIGHLIGHT = 'M62 70 C70 60 84 56 96 62 C84 62 72 68 66 76 C63 80 60 75 62 70 Z';
 
-export const ALL_EXPRESSIONS: MascotExpression[] = ['default', 'smile', 'shonbori', 'sleep'];
+const ALL_EXPRESSIONS: MascotExpression[] = ['default', 'smile', 'shonbori', 'sleep'];
 
 const EXPRESSIONS: Record<MascotExpression, ExpressionData> = {
   default: {
@@ -73,7 +74,7 @@ export function Mascot() {
   const [message] = useState(() => MESSAGES[Math.floor(Math.random() * MESSAGES.length)]);
   const expr = EXPRESSIONS[expression];
   const isDark = useColorScheme() === 'dark';
-  const cardColor = isDark ? '#1D2834' : '#FFFFFF';
+  const cardColor = isDark ? THEME.dark.card : THEME.light.card;
 
   useEffect(() => {
     translateY.value = withRepeat(
@@ -90,7 +91,7 @@ export function Mascot() {
   return (
     <View className="items-center">
       <View className="rounded-full bg-card px-6 py-4">
-        <Text className="text-sm text-foreground">{message}</Text>
+        <Text className="text-sm text-card-foreground">{message}</Text>
       </View>
       <View
         style={{
@@ -106,7 +107,7 @@ export function Mascot() {
         }}
       />
       <Animated.View style={[animatedStyle, { marginTop: 24 }]}>
-        <Svg width={200} height={117} viewBox="24 46 130 76">
+        <Svg width={200} height={117} viewBox="24 46 130 76" accessibilityLabel="だるくも">
           <Path d={CLOUD_BODY} fill="#BFD2E6" />
           <Path d={HIGHLIGHT} fill="#FFFFFF" opacity={0.5} />
           <Ellipse cx={70} cy={expr.cheekCy} rx={8.5} ry={5} fill="#8FB0D6" opacity={0.4} />
