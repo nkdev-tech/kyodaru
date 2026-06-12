@@ -1,10 +1,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
 
 type Props = {
   message: string;
   hideIcon?: boolean;
+  onSelect?: (option: string) => void;
+  disabled?: boolean;
 };
 
 export function UserChat({ message }: Props) {
@@ -17,7 +20,33 @@ export function UserChat({ message }: Props) {
   );
 }
 
-export function AIChat({ message, hideIcon }: Props) {
+function SeparateOptions(message: string): { text: string; options: string[] } {
+  const matches = [...message.matchAll(/([A-Z])\.\s*/g)];
+
+  const firstA = matches.findIndex((m) => m[1] === 'A');
+  if (firstA === -1) return { text: message, options: [] };
+
+  const sequential = [matches[firstA]];
+  for (let i = firstA + 1; i < matches.length; i++) {
+    const expected = String.fromCharCode('A'.charCodeAt(0) + sequential.length);
+    if (matches[i][1] === expected) sequential.push(matches[i]);
+    else break;
+  }
+
+  if (sequential.length < 2) return { text: message, options: [] };
+
+  const text = message.slice(0, sequential[0].index).trim();
+  const options = sequential.map((m, i) => {
+    const start = m.index! + m[0].length;
+    const end = sequential[i + 1]?.index ?? message.length;
+    return message.slice(start, end).trim();
+  });
+
+  return { text, options };
+}
+
+export function AIChat({ message, hideIcon, onSelect, disabled }: Props) {
+  const { text, options } = SeparateOptions(message);
   return (
     <View className="mb-2 flex-row items-start justify-start gap-2">
       {hideIcon ? (
@@ -30,8 +59,15 @@ export function AIChat({ message, hideIcon }: Props) {
           </AvatarFallback>
         </Avatar>
       )}
-      <View className="max-w-[76%] rounded-2xl bg-accent px-4 py-3">
-        <Text>{message}</Text>
+      <View className="max-w-[76%] rounded-2xl bg-accent px-4 py-3 gap-1">
+        {text && <Text>{text}</Text>}
+        {options.map((option) => {
+          return (
+            <Button key={option} variant="secondary" className="h-auto" onPress={() => onSelect?.(option)} disabled={disabled}>
+              <Text>{option}</Text>
+            </Button>
+          );
+        })}
       </View>
     </View>
   );

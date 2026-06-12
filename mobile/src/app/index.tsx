@@ -32,9 +32,10 @@ export default function HomeScreen() {
     }
   }, [chatVisible]);
 
-  const handleSend = () => {
-    if (!draft.trim()) return;
-    const newMessage = [...messages, { role: 'user' as const, text: draft.trim() }];
+  const handleSend = (text: string = draft) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    const newMessage = [...messages, { role: 'user' as const, text: trimmed }];
     setMessages(newMessage);
     setDraft('');
     setInputKey((k) => k + 1);
@@ -135,7 +136,13 @@ export default function HomeScreen() {
                 msg.role === 'user' ? (
                   <UserChat key={i} message={msg.text} />
                 ) : (
-                  <AIChat key={i} message={msg.text} hideIcon={messages[i - 1]?.role === 'model'} />
+                  <AIChat
+                    key={i}
+                    message={msg.text}
+                    hideIcon={messages[i - 1]?.role === 'model'}
+                    onSelect={(option) => handleSend(option)}
+                    disabled={isPendingEntry || isPendingReply}
+                  />
                 ),
               )}
               {isPendingReply && <AIChat message="..." />}
@@ -151,7 +158,7 @@ export default function HomeScreen() {
               <Button
                 variant="default"
                 size="icon"
-                onPress={handleSend}
+                onPress={() => handleSend()}
                 disabled={isPendingEntry || isPendingReply}
                 className="rounded-full"
               >
