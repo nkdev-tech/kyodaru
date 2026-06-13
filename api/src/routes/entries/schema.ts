@@ -2,7 +2,9 @@ import { z } from '@hono/zod-openapi'
 
 const entrySchema = z.object({
   id: z.string().openapi({ example: '1' }),
+  summary: z.string().openapi({ example: 'だるい' }),
   rawText: z.string().openapi({ example: '今日もだるい' }),
+  conditionLevel: z.number().openapi({ example: 1 }),
   createdAt: z
     .date()
     .openapi({ example: new Date('2026-01-01T00:00:00.000Z') }),
