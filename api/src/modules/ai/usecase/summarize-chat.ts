@@ -4,7 +4,7 @@ import summaryPrompt from '../prompts/summary.md'
 
 const responseSchema = z.object({
   summary: z.string(),
-  conditionLevel: z.number(),
+  conditionLevel: z.number().min(1).max(5),
 })
 
 export async function summarizeChat(
