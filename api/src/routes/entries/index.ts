@@ -52,6 +52,14 @@ const createEntryRoute = createRoute({
       },
       description: 'Bad Request',
     },
+    500: {
+      content: {
+        'application/json': {
+          schema: errorResBodySchema,
+        },
+      },
+      description: 'Internal Server Error',
+    },
   },
 })
 
@@ -62,8 +70,22 @@ const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>()
   })
   .openapi(createEntryRoute, async (c) => {
     const data = c.req.valid('json')
-    const res = await createEntry(c.env.GEMINI_API_KEY, data)
-    return c.json(res, 201)
+    try {
+      const res = await createEntry(c.env.GEMINI_API_KEY, data)
+      return c.json(res, 201)
+    } catch (e) {
+      console.error(e)
+      return c.json(
+        {
+          success: false,
+          error: {
+            name: 'Internal Server Error',
+            message: 'サーバーエラーが発生しました',
+          },
+        },
+        500,
+      )
+    }
   })
 
 export default app

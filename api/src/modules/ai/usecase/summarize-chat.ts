@@ -1,5 +1,11 @@
 import { GoogleGenAI } from '@google/genai'
+import { z } from 'zod'
 import summaryPrompt from '../prompts/summary.md'
+
+const responseSchema = z.object({
+  summary: z.string(),
+  conditionLevel: z.number(),
+})
 
 export async function summarizeChat(
   apiKey: string,
@@ -20,5 +26,10 @@ export async function summarizeChat(
   if (!response.text) {
     throw new Error('No response from AI')
   }
-  return JSON.parse(response.text)
+  try {
+    const parsed = JSON.parse(response.text)
+    return responseSchema.parse(parsed)
+  } catch {
+    throw new Error('Invalid response from AI')
+  }
 }

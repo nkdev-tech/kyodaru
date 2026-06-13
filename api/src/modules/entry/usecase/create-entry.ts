@@ -9,7 +9,7 @@ export const createEntry = async (
   const { summary, conditionLevel } = await summarizeChat(apiKey, data.rawText)
   return await EntryRepository.create({
     ...data,
-    summary: summary,
-    conditionLevel: conditionLevel,
+    summary,
+    conditionLevel,
   })
 }
