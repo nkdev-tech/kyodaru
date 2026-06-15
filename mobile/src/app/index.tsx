@@ -110,7 +110,7 @@ export default function HomeScreen() {
         <View className="flex-1 items-center justify-center gap-6">
           <Mascot key={mascotKey} />
           <Button className="rounded-full" onPress={() => setChatVisible(true)}>
-            <Icon as={MessageCircleMore} className="text-primary-foreground" />
+            <Icon as={MessageCircleMore} size={24} />
             <Text>タップしてぼやく</Text>
           </Button>
         </View>
@@ -125,11 +125,12 @@ export default function HomeScreen() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-12 w-12 rounded-full"
+                hitSlop={8}
+                className="rounded-full"
                 onPress={handleClose}
                 disabled={isPendingEntry || isPendingReply}
               >
-                <Icon as={X} className="h-6 w-6" />
+                <Icon as={X} size={32} />
               </Button>
             </View>
             <ScrollView
@@ -167,7 +168,7 @@ export default function HomeScreen() {
                 disabled={isPendingEntry || isPendingReply}
                 className="rounded-full"
               >
-                <Icon as={Send} />
+                <Icon as={Send} size={22} />
               </Button>
             </View>
           </SafeAreaView>
