@@ -77,7 +77,8 @@ npm run android   # Android エミュレーター
 | summary | TEXT | AI要約 |
 | condition_level | INTEGER | 体調レベル（1〜5） |
 | pressure | REAL | 気圧（hPa） |
-| weather | TEXT | 天気 |
+| temperature | REAL | 気温（℃） |
+| weather | TEXT | 天気（日本語ラベル） |
 | created_at | INTEGER | 記録日時 |
 
 ### medicines（薬マスタ）

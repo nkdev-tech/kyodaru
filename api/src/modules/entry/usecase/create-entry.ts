@@ -1,15 +1,84 @@
+import { fetchWeatherApi } from 'openmeteo'
 import { summarizeChat } from '../../ai/usecase/summarize-chat'
-import type { InsertEntry, SelectEntry } from '../entity/entry'
+import type { SelectEntry } from '../entity/entry'
 import { EntryRepository } from '../repository/entry-repository'
+
+const WEATHER_CODE: Record<number, string> = {
+  0: '快晴',
+  1: '晴れ',
+  2: '薄曇り',
+  3: 'くもり',
+  45: '霧',
+  48: '霧',
+  51: '霧雨',
+  53: '霧雨',
+  55: '霧雨',
+  61: '小雨',
+  63: '雨',
+  65: '大雨',
+  71: '小雪',
+  73: '雪',
+  75: '大雪',
+  77: 'あられ',
+  80: 'にわか雨',
+  81: 'にわか雨',
+  82: 'にわか雨',
+  85: 'にわか雪',
+  86: 'にわか雪',
+  95: '雷雨',
+  96: '雷雨',
+  99: 'ひょう',
+}
+
+async function getWeather(latitude?: number, longitude?: number) {
+  if (!latitude || !longitude)
+    return { pressure: null, temperature: null, weatherCode: null }
+  const params = {
+    latitude: latitude,
+    longitude: longitude,
+    current: ['surface_pressure', 'temperature_2m', 'weather_code'],
+    timezone: 'Asia/Tokyo',
+    forecast_days: 1,
+  }
+  const url = 'https://api.open-meteo.com/v1/forecast'
+  const responses = await fetchWeatherApi(url, params)
+  const current = responses[0].current()
+  if (!current) return { pressure: null, temperature: null, weatherCode: null }
+  return {
+    pressure: current.variables(0)?.value() ?? null,
+    temperature: current.variables(1)?.value() ?? null,
+    weatherCode: current.variables(2)?.value() ?? null,
+  }
+}
 
 export const createEntry = async (
   apiKey: string,
-  data: Pick<InsertEntry, 'rawText'>,
+  data: { rawText: string; latitude?: number; longitude?: number },
 ): Promise<SelectEntry> => {
   const { summary, conditionLevel } = await summarizeChat(apiKey, data.rawText)
+
+  let pressure: number | null = null
+  let temperature: number | null = null
+  let weatherCode: number | null = null
+
+  try {
+    ;({ pressure, temperature, weatherCode } = await getWeather(
+      data.latitude,
+      data.longitude,
+    ))
+  } catch (e) {
+    console.log(e)
+  }
+
+  const weather =
+    weatherCode != null ? (WEATHER_CODE[weatherCode] ?? null) : null
+
   return await EntryRepository.create({
-    ...data,
+    rawText: data.rawText,
     summary,
     conditionLevel,
+    pressure,
+    temperature,
+    weather,
   })
 }
