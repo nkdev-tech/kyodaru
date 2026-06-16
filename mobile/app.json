@@ -34,6 +34,12 @@
             "imageWidth": 76
           }
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "位置情報の使用を許可しますか"
+        }
       ]
     ],
     "experiments": {
