@@ -36,7 +36,7 @@ describe('createEntry', () => {
       conditionLevel: 4,
       pressure: 1000,
       temperature: 23.5,
-      weather: '晴れ',
+      weather: '快晴',
       createdAt: new Date('2026-01-01T00:00:00.000Z'),
     }
     vi.mocked(EntryRepository.create).mockResolvedValue(mockEntry)
