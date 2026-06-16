@@ -28,12 +28,20 @@ export type GetApiEntries200Item = {
   summary: string;
   rawText: string;
   conditionLevel: number;
+  /** @nullable */
+  pressure: number | null;
+  /** @nullable */
+  temperature: number | null;
+  /** @nullable */
+  weather: string | null;
   createdAt: string;
 };
 
 export type PostApiEntriesBody = {
   /** @minLength 1 */
   rawText: string;
+  latitude?: number;
+  longitude?: number;
 };
 
 export type PostApiEntries201 = {
@@ -41,6 +49,12 @@ export type PostApiEntries201 = {
   summary: string;
   rawText: string;
   conditionLevel: number;
+  /** @nullable */
+  pressure: number | null;
+  /** @nullable */
+  temperature: number | null;
+  /** @nullable */
+  weather: string | null;
   createdAt: string;
 };
 
@@ -52,6 +66,16 @@ export type PostApiEntries400Error = {
 export type PostApiEntries400 = {
   success: boolean;
   error: PostApiEntries400Error;
+};
+
+export type PostApiEntries500Error = {
+  name: string;
+  message: string;
+};
+
+export type PostApiEntries500 = {
+  success: boolean;
+  error: PostApiEntries500Error;
 };
 
 export type PostApiAiBodyMessagesItemRole = typeof PostApiAiBodyMessagesItemRole[keyof typeof PostApiAiBodyMessagesItemRole];
@@ -221,10 +245,15 @@ export type postApiEntriesResponse400 = {
   status: 400
 }
 
+export type postApiEntriesResponse500 = {
+  data: PostApiEntries500
+  status: 500
+}
+
 export type postApiEntriesResponseSuccess = (postApiEntriesResponse201) & {
   headers: Headers;
 };
-export type postApiEntriesResponseError = (postApiEntriesResponse400) & {
+export type postApiEntriesResponseError = (postApiEntriesResponse400 | postApiEntriesResponse500) & {
   headers: Headers;
 };
 
@@ -259,7 +288,7 @@ export const postApiEntries = async (postApiEntriesBody?: PostApiEntriesBody, op
 
 
 
-export const getPostApiEntriesMutationOptions = <TError = PostApiEntries400,
+export const getPostApiEntriesMutationOptions = <TError = PostApiEntries400 | PostApiEntries500,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiEntries>>, TError,{data?: PostApiEntriesBody}, TContext>, fetch?: RequestInit}
 ): UseMutationOptions<Awaited<ReturnType<typeof postApiEntries>>, TError,{data?: PostApiEntriesBody}, TContext> => {
 
@@ -288,9 +317,9 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
 
     export type PostApiEntriesMutationResult = NonNullable<Awaited<ReturnType<typeof postApiEntries>>>
     export type PostApiEntriesMutationBody = PostApiEntriesBody | undefined
-    export type PostApiEntriesMutationError = PostApiEntries400
+    export type PostApiEntriesMutationError = PostApiEntries400 | PostApiEntries500
 
-    export const usePostApiEntries = <TError = PostApiEntries400,
+    export const usePostApiEntries = <TError = PostApiEntries400 | PostApiEntries500,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiEntries>>, TError,{data?: PostApiEntriesBody}, TContext>, fetch?: RequestInit}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiEntries>>,

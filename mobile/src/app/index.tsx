@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
 import { MessageCircleMore, Send, X } from 'lucide-react-native';
+import * as Location from 'expo-location';
 
 export default function HomeScreen() {
   const [chatVisible, setChatVisible] = useState(false);
@@ -18,6 +19,7 @@ export default function HomeScreen() {
   const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([]);
   const [draft, setDraft] = useState('');
   const [inputKey, setInputKey] = useState(0);
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const { mutate: mutateEntry, isPending: isPendingEntry } = usePostApiEntries();
   const { mutate: mutateReply, isPending: isPendingReply } = usePostApiAi();
 
@@ -31,6 +33,23 @@ export default function HomeScreen() {
       return () => clearTimeout(timer);
     }
   }, [chatVisible]);
+
+  useEffect(() => {
+    async function getCurrentLocation() {
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') return;
+
+        let currentLocation = await Location.getCurrentPositionAsync({});
+        setLocation(currentLocation);
+      } catch (e) {
+        console.error(e);
+        return;
+      }
+    }
+
+    getCurrentLocation();
+  }, []);
 
   const handleSend = (text: string = draft) => {
     const trimmed = text.trim();
@@ -79,6 +98,8 @@ export default function HomeScreen() {
           rawText: messages
             .map((m) => `${m.role === 'model' ? 'AI' : 'ユーザー'}: ${m.text}`)
             .join('\n\n---\n\n'),
+          latitude: location?.coords.latitude,
+          longitude: location?.coords.longitude,
         },
       },
       {
@@ -94,7 +115,7 @@ export default function HomeScreen() {
           // TODO: カレンダーと詳細が実装次第、消す
           Alert.alert(
             '保存完了',
-            `要約: ${result.data.summary}\n体調レベル: ${result.data.conditionLevel}`,
+            `要約: ${result.data.summary}\n体調レベル: ${result.data.conditionLevel}\n${result.data.weather}　${result.data.temperature?.toFixed(1)}度　${result.data.pressure?.toFixed(1)}hPa`,
           );
         },
         onError() {
