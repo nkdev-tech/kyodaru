@@ -15,8 +15,13 @@ const entrySchema = z.object({
 
 const inputEntrySchema = z.object({
   rawText: z.string().min(1).openapi({ example: '今日もだるい' }),
-  latitude: z.number().optional().openapi({ example: 35.6 }),
-  longitude: z.number().optional().openapi({ example: 139.6 }),
+  latitude: z.number().min(-90).max(90).optional().openapi({ example: 35.6 }),
+  longitude: z
+    .number()
+    .min(-180)
+    .max(180)
+    .optional()
+    .openapi({ example: 139.6 }),
 })
 
 export const getEntriesSchema = entrySchema.array()

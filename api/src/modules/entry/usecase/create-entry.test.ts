@@ -59,7 +59,7 @@ describe('createEntry', () => {
     )
   })
 
-  it('can create entry withaout latitude and longitude', async () => {
+  it('can create entry without latitude and longitude', async () => {
     vi.mocked(summarizeChat).mockResolvedValue({
       summary: 'だるい',
       conditionLevel: 4,
@@ -94,12 +94,10 @@ describe('createEntry', () => {
     )
   })
 
-  it('can create entry with API error', async () => {
-    vi.mocked(fetchWeatherApi).mockResolvedValue({
-      error: true,
-      reason:
-        'Cannot initialize WeatherVariable from invalid String value tempeture_2m for key hourly',
-    } as unknown as WeatherApiResponse[])
+  it('can create entry with weather api error', async () => {
+    vi.mocked(fetchWeatherApi).mockRejectedValue(
+      new Error('Open-Meteo API error'),
+    )
     vi.mocked(summarizeChat).mockResolvedValue({
       summary: 'だるい',
       conditionLevel: 4,
@@ -109,9 +107,9 @@ describe('createEntry', () => {
       summary: 'だるい',
       rawText: '今日もだるい',
       conditionLevel: 4,
-      pressure: 1000,
-      temperature: 23.5,
-      weather: '快晴',
+      pressure: null,
+      temperature: null,
+      weather: null,
       createdAt: new Date('2026-01-01T00:00:00.000Z'),
     }
     vi.mocked(EntryRepository.create).mockResolvedValue(mockEntry)

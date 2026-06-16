@@ -31,7 +31,7 @@ const WEATHER_CODE: Record<number, string> = {
 }
 
 async function getWeather(latitude?: number, longitude?: number) {
-  if (!latitude || !longitude)
+  if (latitude == null || longitude == null)
     return { pressure: null, temperature: null, weatherCode: null }
   const params = {
     latitude: latitude,
@@ -41,18 +41,25 @@ async function getWeather(latitude?: number, longitude?: number) {
     forecast_days: 1,
   }
   const url = 'https://api.open-meteo.com/v1/forecast'
-  const responses = await fetchWeatherApi(url, params)
-  const current = responses[0].current()
-  if (!current) return { pressure: null, temperature: null, weatherCode: null }
+  try {
+    const responses = await fetchWeatherApi(url, params)
 
-  const rawPressure = current.variables(0)?.value()
-  const rawTemperature = current.variables(1)?.value()
+    const current = responses[0].current()
+    if (!current)
+      return { pressure: null, temperature: null, weatherCode: null }
 
-  return {
-    pressure: rawPressure != null ? Math.round(rawPressure * 10) / 10 : null,
-    temperature:
-      rawTemperature != null ? Math.round(rawTemperature * 10) / 10 : null,
-    weatherCode: current.variables(2)?.value() ?? null,
+    const rawPressure = current.variables(0)?.value()
+    const rawTemperature = current.variables(1)?.value()
+
+    return {
+      pressure: rawPressure != null ? Math.round(rawPressure * 10) / 10 : null,
+      temperature:
+        rawTemperature != null ? Math.round(rawTemperature * 10) / 10 : null,
+      weatherCode: current.variables(2)?.value() ?? null,
+    }
+  } catch (e) {
+    console.error(e)
+    return { pressure: null, temperature: null, weatherCode: null }
   }
 }
 
@@ -60,20 +67,11 @@ export const createEntry = async (
   apiKey: string,
   data: { rawText: string; latitude?: number; longitude?: number },
 ): Promise<SelectEntry> => {
-  const { summary, conditionLevel } = await summarizeChat(apiKey, data.rawText)
-
-  let pressure: number | null = null
-  let temperature: number | null = null
-  let weatherCode: number | null = null
-
-  try {
-    ;({ pressure, temperature, weatherCode } = await getWeather(
-      data.latitude,
-      data.longitude,
-    ))
-  } catch (e) {
-    console.log(e)
-  }
+  const [{ summary, conditionLevel }, { pressure, temperature, weatherCode }] =
+    await Promise.all([
+      summarizeChat(apiKey, data.rawText),
+      getWeather(data.latitude, data.longitude),
+    ])
 
   const weather =
     weatherCode != null ? (WEATHER_CODE[weatherCode] ?? null) : null
