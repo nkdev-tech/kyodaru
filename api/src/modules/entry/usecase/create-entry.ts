@@ -44,9 +44,14 @@ async function getWeather(latitude?: number, longitude?: number) {
   const responses = await fetchWeatherApi(url, params)
   const current = responses[0].current()
   if (!current) return { pressure: null, temperature: null, weatherCode: null }
+
+  const rawPressure = current.variables(0)?.value()
+  const rawTemperature = current.variables(1)?.value()
+
   return {
-    pressure: current.variables(0)?.value() ?? null,
-    temperature: current.variables(1)?.value() ?? null,
+    pressure: rawPressure != null ? Math.round(rawPressure * 10) / 10 : null,
+    temperature:
+      rawTemperature != null ? Math.round(rawTemperature * 10) / 10 : null,
     weatherCode: current.variables(2)?.value() ?? null,
   }
 }

@@ -14,7 +14,7 @@ describe('createEntry', () => {
 
   it('can create entry', async () => {
     const pressure = 1000
-    const temperature = 23.5
+    const temperature = 23.45
     const weatherCode = 0
     vi.mocked(fetchWeatherApi).mockResolvedValue([
       {
