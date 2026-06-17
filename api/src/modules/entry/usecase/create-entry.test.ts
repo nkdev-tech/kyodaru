@@ -45,7 +45,7 @@ describe('createEntry', () => {
     )
   })
 
-  it('can create entry without weather infomation', async () => {
+  it('can create entry without weather information', async () => {
     vi.mocked(summarizeChat).mockResolvedValue({
       summary: 'だるい',
       conditionLevel: 4,

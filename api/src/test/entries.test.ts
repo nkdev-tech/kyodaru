@@ -6,7 +6,6 @@ import { EntryRepository } from '../modules/entry/repository/entry-repository'
 
 vi.mock('../modules/entry/repository/entry-repository')
 vi.mock('../modules/ai/usecase/summarize-chat')
-vi.mock('openmeteo')
 
 describe('entries', () => {
   beforeEach(() => vi.clearAllMocks())
