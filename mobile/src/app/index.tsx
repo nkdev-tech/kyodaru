@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePostApiAi, usePostApiEntries } from '@/external/api';
 import { AIChat, UserChat } from '@/components/entries/chat';
 import { Logo } from '@/components/Logo';
@@ -22,6 +22,7 @@ export default function HomeScreen() {
   const [draft, setDraft] = useState('');
   const [inputKey, setInputKey] = useState(0);
   const weatherInfo = useWeather();
+  const insets = useSafeAreaInsets();
   const { mutate: mutateEntry, isPending: isPendingEntry } = usePostApiEntries();
   const { mutate: mutateReply, isPending: isPendingReply } = usePostApiAi();
 
@@ -133,7 +134,10 @@ export default function HomeScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1 }}
         >
-          <SafeAreaView className="flex-1 bg-background">
+          <View
+            className="flex-1 bg-background"
+            style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+          >
             <View className="flex-row justify-end p-2">
               <Button
                 variant="ghost"
@@ -184,7 +188,7 @@ export default function HomeScreen() {
                 <Icon as={Send} size={22} />
               </Button>
             </View>
-          </SafeAreaView>
+          </View>
         </KeyboardAvoidingView>
       </Modal>
     </>
