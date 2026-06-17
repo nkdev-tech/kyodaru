@@ -6,9 +6,9 @@ export const createEntry = async (
   apiKey: string,
   data: {
     rawText: string
-    pressure?: number
-    temperature?: number
-    weather?: string
+    pressure?: number | null
+    temperature?: number | null
+    weather?: string | null
   },
 ): Promise<SelectEntry> => {
   const { summary, conditionLevel } = await summarizeChat(apiKey, data.rawText)

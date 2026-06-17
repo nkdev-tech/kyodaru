@@ -15,9 +15,9 @@ const entrySchema = z.object({
 
 const inputEntrySchema = z.object({
   rawText: z.string().min(1).openapi({ example: '今日もだるい' }),
-  pressure: z.number().optional().openapi({ example: 1014.9 }),
-  temperature: z.number().optional().openapi({ example: 23.5 }),
-  weather: z.string().optional().openapi({ example: '快晴' }),
+  pressure: z.number().nullable().optional().openapi({ example: 1014.9 }),
+  temperature: z.number().nullable().optional().openapi({ example: 23.5 }),
+  weather: z.string().nullable().optional().openapi({ example: '快晴' }),
 })
 
 export const getEntriesSchema = entrySchema.array()
