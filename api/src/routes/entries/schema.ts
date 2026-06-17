@@ -5,7 +5,7 @@ const entrySchema = z.object({
   summary: z.string().openapi({ example: 'だるい' }),
   rawText: z.string().openapi({ example: '今日もだるい' }),
   conditionLevel: z.number().openapi({ example: 1 }),
-  pressure: z.number().nullable().openapi({ example: 1000 }),
+  pressure: z.number().nullable().openapi({ example: 1014.9 }),
   temperature: z.number().nullable().openapi({ example: 23.5 }),
   weather: z.string().nullable().openapi({ example: '快晴' }),
   createdAt: z
@@ -15,13 +15,9 @@ const entrySchema = z.object({
 
 const inputEntrySchema = z.object({
   rawText: z.string().min(1).openapi({ example: '今日もだるい' }),
-  latitude: z.number().min(-90).max(90).optional().openapi({ example: 35.6 }),
-  longitude: z
-    .number()
-    .min(-180)
-    .max(180)
-    .optional()
-    .openapi({ example: 139.6 }),
+  pressure: z.number().optional().openapi({ example: 1014.9 }),
+  temperature: z.number().optional().openapi({ example: 23.5 }),
+  weather: z.string().optional().openapi({ example: '快晴' }),
 })
 
 export const getEntriesSchema = entrySchema.array()
