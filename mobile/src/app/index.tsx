@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
 import { usePostApiAi, usePostApiEntries } from '@/external/api';
 import { AIChat, UserChat } from '@/components/entries/chat';
 import { Logo } from '@/components/Logo';
@@ -22,7 +22,7 @@ export default function HomeScreen() {
   const [draft, setDraft] = useState('');
   const [inputKey, setInputKey] = useState(0);
   const weatherInfo = useWeather();
-  const insets = useSafeAreaInsets();
+  const insets = initialWindowMetrics?.insets ?? { top: 0, bottom: 0, left: 0, right: 0 };
   const { mutate: mutateEntry, isPending: isPendingEntry } = usePostApiEntries();
   const { mutate: mutateReply, isPending: isPendingReply } = usePostApiAi();
 
@@ -130,13 +130,13 @@ export default function HomeScreen() {
         </View>
       </SafeAreaView>
       <Modal visible={chatVisible} animationType="slide" transparent onRequestClose={handleClose}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={{ flex: 1 }}
+        <View
+          className="flex-1 bg-background"
+          style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
         >
-          <View
-            className="flex-1 bg-background"
-            style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
           >
             <View className="flex-row justify-end p-2">
               <Button
@@ -188,8 +188,8 @@ export default function HomeScreen() {
                 <Icon as={Send} size={22} />
               </Button>
             </View>
-          </View>
-        </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </View>
       </Modal>
     </>
   );
