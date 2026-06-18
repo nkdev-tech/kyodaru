@@ -16,6 +16,7 @@ describe('createEntry', () => {
     })
     const mockEntry = {
       id: '1',
+      userId: '1',
       summary: 'だるい',
       rawText: '今日もだるい',
       conditionLevel: 4,
@@ -25,16 +26,18 @@ describe('createEntry', () => {
       createdAt: new Date('2026-01-01T00:00:00.000Z'),
     }
     vi.mocked(EntryRepository.create).mockResolvedValue(mockEntry)
+    const userId = '1'
     const data = {
       rawText: '今日もだるい',
       pressure: 1014.9,
       temperature: 23.5,
       weather: '快晴',
     }
-    const res = await createEntry('dummy-key', data)
+    const res = await createEntry(userId, 'dummy-key', data)
     expect(res).toEqual(mockEntry)
     expect(EntryRepository.create).toHaveBeenCalledWith(
       expect.objectContaining({
+        userId,
         summary: 'だるい',
         rawText: '今日もだるい',
         conditionLevel: 4,
@@ -52,6 +55,7 @@ describe('createEntry', () => {
     })
     const mockEntry = {
       id: '1',
+      userId: '1',
       summary: 'だるい',
       rawText: '今日もだるい',
       conditionLevel: 4,
@@ -61,16 +65,18 @@ describe('createEntry', () => {
       createdAt: new Date('2026-01-01T00:00:00.000Z'),
     }
     vi.mocked(EntryRepository.create).mockResolvedValue(mockEntry)
+    const userId = '1'
     const data = {
       rawText: '今日もだるい',
       pressure: undefined,
       temperature: undefined,
       weather: undefined,
     }
-    const res = await createEntry('dummy-key', data)
+    const res = await createEntry(userId, 'dummy-key', data)
     expect(res).toEqual(mockEntry)
     expect(EntryRepository.create).toHaveBeenCalledWith(
       expect.objectContaining({
+        userId,
         summary: 'だるい',
         rawText: '今日もだるい',
         conditionLevel: 4,

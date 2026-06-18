@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
+import type { AuthType } from '../../lib/auth'
 import { createEntry } from '../../modules/entry/usecase/create-entry'
 import { getEntries } from '../../modules/entry/usecase/get-entries'
 import {
@@ -19,6 +20,14 @@ const getEntriesRoute = createRoute({
         },
       },
       description: 'Retrieve Entries',
+    },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResBodySchema,
+        },
+      },
+      description: 'Unauthorized',
     },
   },
 })
@@ -52,6 +61,14 @@ const createEntryRoute = createRoute({
       },
       description: 'Bad Request',
     },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResBodySchema,
+        },
+      },
+      description: 'Unauthorized',
+    },
     500: {
       content: {
         'application/json': {
@@ -63,15 +80,44 @@ const createEntryRoute = createRoute({
   },
 })
 
-const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>()
+const app = new OpenAPIHono<{
+  Bindings: CloudflareBindings
+  Variables: AuthType
+}>()
   .openapi(getEntriesRoute, async (c) => {
-    const res = await getEntries()
+    const userId = c.get('user')?.id
+    if (userId == null) {
+      return c.json(
+        {
+          success: false,
+          error: {
+            name: 'Unauthorized',
+            message: '認証情報がありません',
+          },
+        },
+        401,
+      )
+    }
+    const res = await getEntries(userId)
     return c.json(res, 200)
   })
   .openapi(createEntryRoute, async (c) => {
+    const userId = c.get('user')?.id
+    if (userId == null) {
+      return c.json(
+        {
+          success: false,
+          error: {
+            name: 'Unauthorized',
+            message: '認証情報がありません',
+          },
+        },
+        401,
+      )
+    }
     const data = c.req.valid('json')
     try {
-      const res = await createEntry(c.env.GEMINI_API_KEY, data)
+      const res = await createEntry(userId, c.env.GEMINI_API_KEY, data)
       return c.json(res, 201)
     } catch (e) {
       console.error(e)
