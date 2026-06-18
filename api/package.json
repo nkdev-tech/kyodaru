@@ -19,7 +19,6 @@
     "@hono/zod-openapi": "^1.4.0",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.23",
-    "openmeteo": "^1.2.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {

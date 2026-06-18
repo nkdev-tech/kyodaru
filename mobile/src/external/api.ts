@@ -40,8 +40,12 @@ export type GetApiEntries200Item = {
 export type PostApiEntriesBody = {
   /** @minLength 1 */
   rawText: string;
-  latitude?: number;
-  longitude?: number;
+  /** @nullable */
+  pressure?: number | null;
+  /** @nullable */
+  temperature?: number | null;
+  /** @nullable */
+  weather?: string | null;
 };
 
 export type PostApiEntries201 = {

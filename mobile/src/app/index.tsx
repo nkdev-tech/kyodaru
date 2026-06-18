@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
 import { usePostApiAi, usePostApiEntries } from '@/external/api';
 import { AIChat, UserChat } from '@/components/entries/chat';
+import { Logo } from '@/components/Logo';
 import { Mascot } from '@/components/Mascot';
+import { WeatherPanel } from '@/components/WeatherPanel';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Textarea } from '@/components/ui/textarea';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
+import { useWeather } from '@/hooks/use-weather';
 import { MessageCircleMore, Send, X } from 'lucide-react-native';
-import * as Location from 'expo-location';
 
 export default function HomeScreen() {
   const [chatVisible, setChatVisible] = useState(false);
@@ -19,7 +21,8 @@ export default function HomeScreen() {
   const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([]);
   const [draft, setDraft] = useState('');
   const [inputKey, setInputKey] = useState(0);
-  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const weatherInfo = useWeather();
+  const insets = initialWindowMetrics?.insets ?? { top: 0, bottom: 0, left: 0, right: 0 };
   const { mutate: mutateEntry, isPending: isPendingEntry } = usePostApiEntries();
   const { mutate: mutateReply, isPending: isPendingReply } = usePostApiAi();
 
@@ -33,23 +36,6 @@ export default function HomeScreen() {
       return () => clearTimeout(timer);
     }
   }, [chatVisible]);
-
-  useEffect(() => {
-    async function getCurrentLocation() {
-      try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') return;
-
-        let currentLocation = await Location.getCurrentPositionAsync({});
-        setLocation(currentLocation);
-      } catch (e) {
-        console.error(e);
-        return;
-      }
-    }
-
-    getCurrentLocation();
-  }, []);
 
   const handleSend = (text: string = draft) => {
     const trimmed = text.trim();
@@ -98,8 +84,9 @@ export default function HomeScreen() {
           rawText: messages
             .map((m) => `${m.role === 'model' ? 'AI' : 'ユーザー'}: ${m.text}`)
             .join('\n\n---\n\n'),
-          latitude: location?.coords.latitude,
-          longitude: location?.coords.longitude,
+          pressure: weatherInfo.pressure,
+          temperature: weatherInfo.temperature,
+          weather: weatherInfo.weather,
         },
       },
       {
@@ -128,20 +115,29 @@ export default function HomeScreen() {
   return (
     <>
       <SafeAreaView className="flex-1 bg-background">
-        <View className="flex-1 items-center justify-center gap-6">
-          <Mascot key={mascotKey} />
-          <Button className="rounded-full" onPress={() => setChatVisible(true)}>
-            <Icon as={MessageCircleMore} size={24} />
-            <Text>タップしてぼやく</Text>
-          </Button>
+        <View className="flex-1">
+          <View className="mx-5 my-3">
+            <Logo />
+          </View>
+          <WeatherPanel weatherInfo={weatherInfo} />
+          <View className="flex-1 items-center justify-center gap-6 bg-transparent">
+            <Mascot key={mascotKey} />
+            <Button className="rounded-full" onPress={() => setChatVisible(true)}>
+              <Icon as={MessageCircleMore} size={24} />
+              <Text>タップしてぼやく</Text>
+            </Button>
+          </View>
         </View>
       </SafeAreaView>
       <Modal visible={chatVisible} animationType="slide" transparent onRequestClose={handleClose}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={{ flex: 1 }}
+        <View
+          className="flex-1 bg-background"
+          style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
         >
-          <SafeAreaView className="flex-1 bg-background">
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
+          >
             <View className="flex-row justify-end p-2">
               <Button
                 variant="ghost"
@@ -192,8 +188,8 @@ export default function HomeScreen() {
                 <Icon as={Send} size={22} />
               </Button>
             </View>
-          </SafeAreaView>
-        </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </View>
       </Modal>
     </>
   );
