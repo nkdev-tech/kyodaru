@@ -99,6 +99,12 @@ export type PostApiAiBodyMessagesItem = {
 export type PostApiAiBody = {
   /** @minItems 1 */
   messages: PostApiAiBodyMessagesItem[];
+  /** @nullable */
+  pressure: number | null;
+  /** @nullable */
+  temperature: number | null;
+  /** @nullable */
+  weather: string | null;
 };
 
 export type PostApiAi200 = {

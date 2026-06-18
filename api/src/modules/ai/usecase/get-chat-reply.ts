@@ -5,20 +5,25 @@ import chatPrompt from '../prompts/chat.md'
 
 export const getChatReply = async (
   apiKey: string,
-  messages: z.infer<typeof getChatReplyReqSchema>['messages'],
+  data: z.infer<typeof getChatReplyReqSchema>,
 ): Promise<{ reply: string }> => {
   const ai = new GoogleGenAI({ apiKey })
   const response = await ai.models.generateContent({
     model: 'gemini-3.1-flash-lite',
-    contents: messages.map((m) => ({
+    contents: data.messages.map((m) => ({
       role: m.role,
       parts: [{ text: m.text }],
     })),
     config: {
-      systemInstruction: chatPrompt.replace(
-        '{{timestamp}}',
-        new Date().toISOString(),
-      ),
+      systemInstruction: chatPrompt
+        .replace('{{timestamp}}', () => new Date().toISOString())
+        .replace('{{pressure}}', () =>
+          data.pressure != null ? String(data.pressure) : '不明',
+        )
+        .replace('{{temperature}}', () =>
+          data.temperature != null ? String(data.temperature) : '不明',
+        )
+        .replace('{{weather}}', () => data.weather ?? '不明'),
     },
   })
   if (!response.text) {

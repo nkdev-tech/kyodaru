@@ -51,7 +51,7 @@ const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>().openapi(
   async (c) => {
     const data = c.req.valid('json')
     try {
-      const res = await getChatReply(c.env.GEMINI_API_KEY, data.messages)
+      const res = await getChatReply(c.env.GEMINI_API_KEY, data)
       return c.json(res, 200)
     } catch (e) {
       console.error(e)

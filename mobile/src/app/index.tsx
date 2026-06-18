@@ -49,6 +49,9 @@ export default function HomeScreen() {
       {
         data: {
           messages: newMessage,
+          pressure: weatherInfo.pressure,
+          temperature: weatherInfo.temperature,
+          weather: weatherInfo.weather,
         },
       },
       {
