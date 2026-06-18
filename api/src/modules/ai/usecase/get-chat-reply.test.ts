@@ -38,4 +38,34 @@ describe('getChatReply', () => {
       weather,
     )
   })
+  it('can get reply without weather information', async () => {
+    const generateContent = vi
+      .fn()
+      .mockResolvedValue({ text: 'それはつらいですね' })
+    // biome-ignore lint/complexity/useArrowFunction: vi.mock のコンストラクタモックにはアロー関数不可
+    vi.mocked(GoogleGenAI).mockImplementation(function () {
+      return { models: { generateContent } } as unknown as GoogleGenAI
+    })
+    const pressure = null
+    const temperature = null
+    const weather = null
+    const result = await getChatReply('dummy-key', {
+      messages: [
+        { role: 'model', text: '今日の体調はいかがですか？' },
+        { role: 'user', text: '頭が痛い' },
+      ],
+      pressure,
+      temperature,
+      weather,
+    })
+    expect(result.reply).toBe('それはつらいですね')
+    const systemInstruction =
+      generateContent.mock.calls[0][0].config.systemInstruction
+    expect(systemInstruction).toContain('今の天気: 不明')
+    expect(systemInstruction).toContain('今の気温: 不明')
+    expect(systemInstruction).toContain('今の気圧: 不明')
+    expect(systemInstruction).not.toContain('{{weather}}')
+    expect(systemInstruction).not.toContain('{{temperature}}')
+    expect(systemInstruction).not.toContain('{{pressure}}')
+  })
 })

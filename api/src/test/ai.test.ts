@@ -25,7 +25,7 @@ describe('ai', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages, pressure, temperature, weather }),
       }),
-      env,
+      { ...env, GEMINI_API_KEY: 'dummy-key' },
     )
     expect(res.status).toBe(200)
     expect(getChatReply).toHaveBeenCalledWith(expect.anything(), {
@@ -46,7 +46,7 @@ describe('ai', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: [], pressure, temperature, weather }),
       }),
-      env,
+      { ...env, GEMINI_API_KEY: 'dummy-key' },
     )
     expect(res.status).toBe(400)
   })
