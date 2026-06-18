@@ -15,11 +15,27 @@ describe('getChatReply', () => {
     vi.mocked(GoogleGenAI).mockImplementation(function () {
       return { models: { generateContent } } as unknown as GoogleGenAI
     })
-
-    const result = await getChatReply('dummy-key', [
-      { role: 'model', text: '今日の体調はいかがですか？' },
-      { role: 'user', text: '頭が痛い' },
-    ])
+    const pressure = 980.2
+    const temperature = 18.6
+    const weather = '小雨'
+    const result = await getChatReply('dummy-key', {
+      messages: [
+        { role: 'model', text: '今日の体調はいかがですか？' },
+        { role: 'user', text: '頭が痛い' },
+      ],
+      pressure,
+      temperature,
+      weather,
+    })
     expect(result.reply).toBe('それはつらいですね')
+    expect(generateContent.mock.calls[0][0].config.systemInstruction).toContain(
+      String(pressure),
+    )
+    expect(generateContent.mock.calls[0][0].config.systemInstruction).toContain(
+      String(temperature),
+    )
+    expect(generateContent.mock.calls[0][0].config.systemInstruction).toContain(
+      weather,
+    )
   })
 })

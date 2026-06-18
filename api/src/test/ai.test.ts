@@ -16,23 +16,35 @@ describe('ai', () => {
         text: '今日もだるい',
       },
     ]
+    const pressure = 980.2
+    const temperature = 18.6
+    const weather = '小雨'
     const res = await app.fetch(
       new Request('http://localhost/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages }),
+        body: JSON.stringify({ messages, pressure, temperature, weather }),
       }),
       env,
     )
     expect(res.status).toBe(200)
+    expect(getChatReply).toHaveBeenCalledWith(expect.anything(), {
+      messages,
+      pressure,
+      temperature,
+      weather,
+    })
   })
 
   it('cannot get ai reply with invalid value', async () => {
+    const pressure = 980.2
+    const temperature = 18.6
+    const weather = '小雨'
     const res = await app.fetch(
       new Request('http://localhost/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [] }),
+        body: JSON.stringify({ messages: [], pressure, temperature, weather }),
       }),
       env,
     )

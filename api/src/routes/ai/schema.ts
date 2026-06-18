@@ -9,6 +9,9 @@ export const getChatReplyReqSchema = z.object({
       }),
     )
     .min(1),
+  pressure: z.number().nullable().openapi({ example: 1014.9 }),
+  temperature: z.number().nullable().openapi({ example: 23.5 }),
+  weather: z.string().nullable().openapi({ example: '快晴' }),
 })
 
 export const getChatReplyResSchema = z.object({
