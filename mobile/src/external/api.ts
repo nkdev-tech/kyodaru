@@ -23,6 +23,7 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query';
 
+import { customFetch } from '../lib/custom-fetch';
 export type GetApiEntries200Item = {
   id: string;
   summary: string;
@@ -35,6 +36,16 @@ export type GetApiEntries200Item = {
   /** @nullable */
   weather: string | null;
   createdAt: string;
+};
+
+export type GetApiEntries401Error = {
+  name: string;
+  message: string;
+};
+
+export type GetApiEntries401 = {
+  success: boolean;
+  error: GetApiEntries401Error;
 };
 
 export type PostApiEntriesBody = {
@@ -72,6 +83,16 @@ export type PostApiEntries400 = {
   error: PostApiEntries400Error;
 };
 
+export type PostApiEntries401Error = {
+  name: string;
+  message: string;
+};
+
+export type PostApiEntries401 = {
+  success: boolean;
+  error: PostApiEntries401Error;
+};
+
 export type PostApiEntries500Error = {
   name: string;
   message: string;
@@ -100,11 +121,11 @@ export type PostApiAiBody = {
   /** @minItems 1 */
   messages: PostApiAiBodyMessagesItem[];
   /** @nullable */
-  pressure: number | null;
+  pressure?: number | null;
   /** @nullable */
-  temperature: number | null;
+  temperature?: number | null;
   /** @nullable */
-  weather: string | null;
+  weather?: string | null;
 };
 
 export type PostApiAi200 = {
@@ -131,17 +152,28 @@ export type PostApiAi500 = {
   error: PostApiAi500Error;
 };
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+
+
 export type getApiEntriesResponse200 = {
   data: GetApiEntries200Item[]
   status: 200
 }
 
+export type getApiEntriesResponse401 = {
+  data: GetApiEntries401
+  status: 401
+}
+
 export type getApiEntriesResponseSuccess = (getApiEntriesResponse200) & {
   headers: Headers;
 };
-;
+export type getApiEntriesResponseError = (getApiEntriesResponse401) & {
+  headers: Headers;
+};
 
-export type getApiEntriesResponse = (getApiEntriesResponseSuccess)
+export type getApiEntriesResponse = (getApiEntriesResponseSuccess | getApiEntriesResponseError)
 
 export const getGetApiEntriesUrl = () => {
 
@@ -153,21 +185,14 @@ export const getGetApiEntriesUrl = () => {
 
 export const getApiEntries = async ( options?: RequestInit): Promise<getApiEntriesResponse> => {
 
-  const res = await fetch(getGetApiEntriesUrl(),
+  return customFetch<getApiEntriesResponse>(getGetApiEntriesUrl(),
   {
     ...options,
     method: 'GET'
 
 
   }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: getApiEntriesResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as getApiEntriesResponse
-}
+);}
 
 
 
@@ -180,16 +205,16 @@ export const getGetApiEntriesQueryKey = () => {
     }
 
 
-export const getGetApiEntriesQueryOptions = <TData = Awaited<ReturnType<typeof getApiEntries>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>>, fetch?: RequestInit}
+export const getGetApiEntriesQueryOptions = <TData = Awaited<ReturnType<typeof getApiEntries>>, TError = GetApiEntries401>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
-const {query: queryOptions, fetch: fetchOptions} = options ?? {};
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getGetApiEntriesQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiEntries>>> = ({ signal }) => getApiEntries({ signal, ...fetchOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiEntries>>> = ({ signal }) => getApiEntries({ signal, ...requestOptions });
 
 
 
@@ -199,36 +224,36 @@ const {query: queryOptions, fetch: fetchOptions} = options ?? {};
 }
 
 export type GetApiEntriesQueryResult = NonNullable<Awaited<ReturnType<typeof getApiEntries>>>
-export type GetApiEntriesQueryError = unknown
+export type GetApiEntriesQueryError = GetApiEntries401
 
 
-export function useGetApiEntries<TData = Awaited<ReturnType<typeof getApiEntries>>, TError = unknown>(
+export function useGetApiEntries<TData = Awaited<ReturnType<typeof getApiEntries>>, TError = GetApiEntries401>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiEntries>>,
           TError,
           Awaited<ReturnType<typeof getApiEntries>>
         > , 'initialData'
-      >, fetch?: RequestInit}
+      >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiEntries<TData = Awaited<ReturnType<typeof getApiEntries>>, TError = unknown>(
+export function useGetApiEntries<TData = Awaited<ReturnType<typeof getApiEntries>>, TError = GetApiEntries401>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiEntries>>,
           TError,
           Awaited<ReturnType<typeof getApiEntries>>
         > , 'initialData'
-      >, fetch?: RequestInit}
+      >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiEntries<TData = Awaited<ReturnType<typeof getApiEntries>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>>, fetch?: RequestInit}
+export function useGetApiEntries<TData = Awaited<ReturnType<typeof getApiEntries>>, TError = GetApiEntries401>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useGetApiEntries<TData = Awaited<ReturnType<typeof getApiEntries>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>>, fetch?: RequestInit}
+export function useGetApiEntries<TData = Awaited<ReturnType<typeof getApiEntries>>, TError = GetApiEntries401>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -255,6 +280,11 @@ export type postApiEntriesResponse400 = {
   status: 400
 }
 
+export type postApiEntriesResponse401 = {
+  data: PostApiEntries401
+  status: 401
+}
+
 export type postApiEntriesResponse500 = {
   data: PostApiEntries500
   status: 500
@@ -263,7 +293,7 @@ export type postApiEntriesResponse500 = {
 export type postApiEntriesResponseSuccess = (postApiEntriesResponse201) & {
   headers: Headers;
 };
-export type postApiEntriesResponseError = (postApiEntriesResponse400 | postApiEntriesResponse500) & {
+export type postApiEntriesResponseError = (postApiEntriesResponse400 | postApiEntriesResponse401 | postApiEntriesResponse500) & {
   headers: Headers;
 };
 
@@ -279,35 +309,28 @@ export const getPostApiEntriesUrl = () => {
 
 export const postApiEntries = async (postApiEntriesBody?: PostApiEntriesBody, options?: RequestInit): Promise<postApiEntriesResponse> => {
 
-  const res = await fetch(getPostApiEntriesUrl(),
+  return customFetch<postApiEntriesResponse>(getPostApiEntriesUrl(),
   {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(postApiEntriesBody)
   }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: postApiEntriesResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as postApiEntriesResponse
-}
+);}
 
 
 
 
-export const getPostApiEntriesMutationOptions = <TError = PostApiEntries400 | PostApiEntries500,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiEntries>>, TError,{data?: PostApiEntriesBody}, TContext>, fetch?: RequestInit}
+export const getPostApiEntriesMutationOptions = <TError = PostApiEntries400 | PostApiEntries401 | PostApiEntries500,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiEntries>>, TError,{data?: PostApiEntriesBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof postApiEntries>>, TError,{data?: PostApiEntriesBody}, TContext> => {
 
 const mutationKey = ['postApiEntries'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+      : {mutation: { mutationKey, }, request: undefined};
 
 
 
@@ -315,7 +338,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiEntries>>, {data?: PostApiEntriesBody}> = (props) => {
           const {data} = props ?? {};
 
-          return  postApiEntries(data,fetchOptions)
+          return  postApiEntries(data,requestOptions)
         }
 
 
@@ -327,10 +350,10 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
 
     export type PostApiEntriesMutationResult = NonNullable<Awaited<ReturnType<typeof postApiEntries>>>
     export type PostApiEntriesMutationBody = PostApiEntriesBody | undefined
-    export type PostApiEntriesMutationError = PostApiEntries400 | PostApiEntries500
+    export type PostApiEntriesMutationError = PostApiEntries400 | PostApiEntries401 | PostApiEntries500
 
-    export const usePostApiEntries = <TError = PostApiEntries400 | PostApiEntries500,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiEntries>>, TError,{data?: PostApiEntriesBody}, TContext>, fetch?: RequestInit}
+    export const usePostApiEntries = <TError = PostApiEntries400 | PostApiEntries401 | PostApiEntries500,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiEntries>>, TError,{data?: PostApiEntriesBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiEntries>>,
         TError,
@@ -374,35 +397,28 @@ export const getPostApiAiUrl = () => {
 
 export const postApiAi = async (postApiAiBody?: PostApiAiBody, options?: RequestInit): Promise<postApiAiResponse> => {
 
-  const res = await fetch(getPostApiAiUrl(),
+  return customFetch<postApiAiResponse>(getPostApiAiUrl(),
   {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(postApiAiBody)
   }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: postApiAiResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as postApiAiResponse
-}
+);}
 
 
 
 
 export const getPostApiAiMutationOptions = <TError = PostApiAi400 | PostApiAi500,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAi>>, TError,{data?: PostApiAiBody}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAi>>, TError,{data?: PostApiAiBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof postApiAi>>, TError,{data?: PostApiAiBody}, TContext> => {
 
 const mutationKey = ['postApiAi'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+      : {mutation: { mutationKey, }, request: undefined};
 
 
 
@@ -410,7 +426,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAi>>, {data?: PostApiAiBody}> = (props) => {
           const {data} = props ?? {};
 
-          return  postApiAi(data,fetchOptions)
+          return  postApiAi(data,requestOptions)
         }
 
 
@@ -425,7 +441,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
     export type PostApiAiMutationError = PostApiAi400 | PostApiAi500
 
     export const usePostApiAi = <TError = PostApiAi400 | PostApiAi500,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAi>>, TError,{data?: PostApiAiBody}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAi>>, TError,{data?: PostApiAiBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiAi>>,
         TError,

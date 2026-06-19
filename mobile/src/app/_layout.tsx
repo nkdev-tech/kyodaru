@@ -17,10 +17,18 @@ import { useColorScheme } from 'react-native';
 import { NAV_THEME } from '@/lib/theme';
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
+import { authClient } from '@/lib/auth-client';
 
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
+
+(async () => {
+  const { data } = await authClient.getSession();
+  if (!data) {
+    await authClient.signIn.anonymous();
+  }
+})();
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
