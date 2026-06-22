@@ -1,0 +1,8 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "orval generated client (type aliases trigger false positives, e.g. GetApiEntriesQueryError)"
+paths = [
+  '''mobile/src/external/api\.ts''',
+]

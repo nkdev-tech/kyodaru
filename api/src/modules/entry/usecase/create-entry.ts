@@ -3,6 +3,7 @@ import type { SelectEntry } from '../entity/entry'
 import { EntryRepository } from '../repository/entry-repository'
 
 export const createEntry = async (
+  userId: string,
   apiKey: string,
   data: {
     rawText: string
@@ -14,6 +15,7 @@ export const createEntry = async (
   const { summary, conditionLevel } = await summarizeChat(apiKey, data.rawText)
 
   return await EntryRepository.create({
+    userId,
     rawText: data.rawText,
     summary,
     conditionLevel,

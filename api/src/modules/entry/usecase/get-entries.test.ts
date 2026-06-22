@@ -11,6 +11,7 @@ describe('getEntries', () => {
     const mockEntries = [
       {
         id: '1',
+        userId: '1',
         summary: 'だるい',
         rawText: '今日もだるい',
         conditionLevel: 4,
@@ -21,6 +22,7 @@ describe('getEntries', () => {
       },
       {
         id: '2',
+        userId: '1',
         summary: '頭痛い',
         rawText: '頭痛い。ズキズキとこめかみが痛む。眩暈がする',
         conditionLevel: 5,
@@ -31,6 +33,7 @@ describe('getEntries', () => {
       },
       {
         id: '3',
+        userId: '1',
         summary: '普通',
         rawText: '普通。やや肩こりがある',
         conditionLevel: 3,
@@ -41,8 +44,9 @@ describe('getEntries', () => {
       },
     ]
     vi.mocked(EntryRepository.findAll).mockResolvedValue(mockEntries)
-    const res = await getEntries()
+    const userId = '1'
+    const res = await getEntries(userId)
     expect(res).toEqual(mockEntries)
-    expect(EntryRepository.findAll).toHaveBeenCalledTimes(1)
+    expect(EntryRepository.findAll).toHaveBeenCalledWith(userId)
   })
 })

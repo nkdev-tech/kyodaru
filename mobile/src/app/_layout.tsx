@@ -1,6 +1,6 @@
 import '../global.css';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   MPLUSRounded1c_400Regular,
@@ -17,6 +17,7 @@ import { useColorScheme } from 'react-native';
 import { NAV_THEME } from '@/lib/theme';
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
+import { authClient } from '@/lib/auth-client';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -30,16 +31,32 @@ export default function TabLayout() {
     MPLUSRounded1c_500Medium,
     MPLUSRounded1c_700Bold,
   });
+  const [sessionReady, setSessionReady] = useState(false);
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
+    (async () => {
+      try {
+        const { data } = await authClient.getSession();
+        if (!data) {
+          await authClient.signIn.anonymous();
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setSessionReady(true);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    if ((fontsLoaded || fontError) && sessionReady) {
       (async () => {
         await SplashScreen.hideAsync();
       })();
     }
-  }, [fontsLoaded, fontError]);
+  }, [fontsLoaded, fontError, sessionReady]);
 
-  if (!fontsLoaded && !fontError) return null;
+  if ((!fontsLoaded && !fontError) || !sessionReady) return null;
 
   return (
     <QueryClientProvider client={queryClient}>
