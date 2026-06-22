@@ -180,7 +180,7 @@ export const getGetApiEntriesUrl = () => {
 
 
 
-  return `http://localhost:8787/api/entries`
+  return `/api/entries`
 }
 
 export const getApiEntries = async ( options?: RequestInit): Promise<getApiEntriesResponse> => {
@@ -200,7 +200,7 @@ export const getApiEntries = async ( options?: RequestInit): Promise<getApiEntri
 
 export const getGetApiEntriesQueryKey = () => {
     return [
-    `http://localhost:8787/api/entries`
+    `/api/entries`
     ] as const;
     }
 
@@ -304,7 +304,7 @@ export const getPostApiEntriesUrl = () => {
 
 
 
-  return `http://localhost:8787/api/entries`
+  return `/api/entries`
 }
 
 export const postApiEntries = async (postApiEntriesBody?: PostApiEntriesBody, options?: RequestInit): Promise<postApiEntriesResponse> => {
@@ -392,7 +392,7 @@ export const getPostApiAiUrl = () => {
 
 
 
-  return `http://localhost:8787/api/ai`
+  return `/api/ai`
 }
 
 export const postApiAi = async (postApiAiBody?: PostApiAiBody, options?: RequestInit): Promise<postApiAiResponse> => {

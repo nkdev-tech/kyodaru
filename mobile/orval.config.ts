@@ -6,7 +6,6 @@ export default defineConfig({
       mode: "single",
       target: "./src/external/api.ts",
       client: "react-query",
-      baseUrl: 'http://localhost:8787',
       override: {
         mutator: {
           path: './src/lib/custom-fetch.ts',

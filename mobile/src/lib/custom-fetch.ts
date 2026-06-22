@@ -1,4 +1,5 @@
 import { authClient } from './auth-client';
+import { apiBaseUrl } from './env';
 
 const getHeaders = (headers?: HeadersInit): HeadersInit => {
   return {
@@ -13,7 +14,7 @@ export const customFetch = async <T>(url: string, options: RequestInit): Promise
     headers: getHeaders(options.headers),
   };
 
-  const request = new Request(url, requestInit);
+  const request = new Request(`${apiBaseUrl}${url}`, requestInit);
   const response = await fetch(request);
 
   const contentType = response.headers.get('content-type');
