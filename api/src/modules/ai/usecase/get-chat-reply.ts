@@ -3,10 +3,10 @@ import type { z } from '@hono/zod-openapi'
 import type { getChatReplyReqSchema } from '../../../routes/ai/schema'
 import chatPrompt from '../prompts/chat.md'
 
-export const getChatReply = async (
+export async function getChatReply(
   apiKey: string,
   data: z.infer<typeof getChatReplyReqSchema>,
-): Promise<{ reply: string }> => {
+): Promise<{ reply: string }> {
   const ai = new GoogleGenAI({ apiKey })
   const response = await ai.models.generateContent({
     model: 'gemini-3.1-flash-lite',

@@ -2,7 +2,7 @@ import { summarizeChat } from '../../ai/usecase/summarize-chat'
 import type { SelectEntry } from '../entity/entry'
 import { EntryRepository } from '../repository/entry-repository'
 
-export const createEntry = async (
+export async function createEntry(
   userId: string,
   apiKey: string,
   data: {
@@ -11,7 +11,7 @@ export const createEntry = async (
     temperature?: number | null
     weather?: string | null
   },
-): Promise<SelectEntry> => {
+): Promise<SelectEntry> {
   const { summary, conditionLevel } = await summarizeChat(apiKey, data.rawText)
 
   return await EntryRepository.create({

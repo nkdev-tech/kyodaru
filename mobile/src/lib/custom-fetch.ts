@@ -1,14 +1,14 @@
 import { authClient } from './auth-client';
 import { apiBaseUrl } from './env';
 
-const getHeaders = (headers?: HeadersInit): HeadersInit => {
+function getHeaders(headers?: HeadersInit): HeadersInit {
   return {
     ...headers,
     Cookie: authClient.getCookie(),
   };
-};
+}
 
-export const customFetch = async <T>(url: string, options: RequestInit): Promise<T> => {
+export async function customFetch<T>(url: string, options: RequestInit): Promise<T> {
   const requestInit: RequestInit = {
     ...options,
     headers: getHeaders(options.headers),
@@ -23,4 +23,4 @@ export const customFetch = async <T>(url: string, options: RequestInit): Promise
     : await response.text();
 
   return { status: response.status, data: body, headers: response.headers } as T;
-};
+}
