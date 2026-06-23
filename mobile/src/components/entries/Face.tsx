@@ -11,11 +11,11 @@ const LEVEL_COLORS: Record<number, string> = {
 };
 
 const LEVEL_LABELS: Record<number, string> = {
-  1: 'とても良い',
-  2: 'まぁまぁ良い',
-  3: '普通',
-  4: 'まぁまぁ悪い',
-  5: 'とても悪い',
+  1: 'とてもよい',
+  2: 'ややよい',
+  3: 'ふつう',
+  4: 'ややわるい',
+  5: 'とてもわるい',
 };
 
 type FaceShape = {
@@ -94,11 +94,11 @@ export function Face({ level, size = 24 }: Props) {
   );
 }
 
-export function ConditionLabel({ level }: Props) {
+export function ConditionLabel({ level }: { level: number }) {
   const color = LEVEL_COLORS[level] ?? LEVEL_COLORS[3];
   return (
-    <Badge className="font-body-bold" style={{ backgroundColor: color }}>
-      <Text>{LEVEL_LABELS[level]}</Text>
+    <Badge style={{ backgroundColor: color }}>
+      <Text className="font-body-bold text-[#313D4C]/80">{LEVEL_LABELS[level]}</Text>
     </Badge>
   );
 }

@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
-import { useGetApiEntries, GetApiEntries200Item } from '@/external/api';
+import { useGetApiEntries } from '@/external/api';
 import { cn } from '@/lib/utils';
 import { getWeatherIcon } from '@/lib/weather-icon';
 
@@ -128,7 +128,6 @@ export default function CalendarTab() {
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const [details, setDetails] = useState<GetApiEntries200Item[]>([]);
   // 滑り込みアニメの向き（翌月=右から / 前月=左から）
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
 
@@ -141,6 +140,15 @@ export default function CalendarTab() {
       entriesByDay[day] = { weather: entry.weather, level: entry.conditionLevel };
     }
   }
+
+  // 選択日の詳細は entries から算出する（state に持たず、再フェッチに追従させる）
+  const details = selectedDay
+    ? entries.filter(
+        (item) =>
+          new Date(item.createdAt).toDateString() ===
+          new Date(year, month, selectedDay).toDateString(),
+      )
+    : [];
 
   // year*12 + month の通し番号で範囲を判定する
   const currentSerial = year * 12 + month;
@@ -156,7 +164,6 @@ export default function CalendarTab() {
     setYear(next.getFullYear());
     setMonth(next.getMonth());
     setSelectedDay(null);
-    setDetails([]);
   };
 
   const isToday = (cell: Cell) =>
@@ -235,17 +242,7 @@ export default function CalendarTab() {
                   isSelected={cell.currentMonth && cell.day === selectedDay}
                   info={cell.currentMonth ? entriesByDay[cell.day] : undefined}
                   cornerClassName={cornerClassName(i, cells.length)}
-                  onPress={() => {
-                    setSelectedDay(cell.day);
-                    setDetails(
-                      entries.filter((item) => {
-                        return (
-                          new Date(item.createdAt).toDateString() ===
-                          new Date(year, month, cell.day).toDateString()
-                        );
-                      }),
-                    );
-                  }}
+                  onPress={() => setSelectedDay(cell.day)}
                 />
               ))}
             </View>
@@ -255,17 +252,16 @@ export default function CalendarTab() {
 
       <View className="mx-5 mt-3 flex-1">
         <Text className="py-2 font-body-medium">
-          {selectedDay &&
-            format(new Date(year, month + 1, selectedDay), 'M月d日(E)', { locale: ja })}
+          {selectedDay && format(new Date(year, month, selectedDay), 'M月d日(E)', { locale: ja })}
         </Text>
         <ScrollView
           className="flex-1"
           contentContainerClassName="gap-2 pb-2"
           showsVerticalScrollIndicator={false}
         >
-          {details.map((detail, i) => (
+          {details.map((detail) => (
             <View
-              key={`${selectedDay}-${i}`}
+              key={detail.id}
               className="gap-1 rounded-2xl bg-card px-4 py-3 shadow-sm shadow-black/5"
             >
               <View className="flex-row items-center justify-between bg-transparent">
@@ -275,7 +271,7 @@ export default function CalendarTab() {
                 </View>
                 <View className="bg-transparent">
                   <Text className="text-xs text-muted-foreground">
-                    {format(new Date(detail.createdAt), 'hh:mm', { locale: ja })}
+                    {format(new Date(detail.createdAt), 'HH:mm', { locale: ja })}
                   </Text>
                 </View>
               </View>
