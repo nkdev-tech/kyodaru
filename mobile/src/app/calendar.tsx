@@ -1,11 +1,13 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
-import { Pressable } from 'react-native';
+import { ChevronLeft, ChevronRight, Gauge, Thermometer } from 'lucide-react-native';
+import { format } from 'date-fns';
+import { ja } from 'date-fns/locale';
+import { useState } from 'react';
+import { Pressable, ScrollView } from 'react-native';
 import { Directions, Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { SlideInLeft, SlideInRight } from 'react-native-reanimated';
 import { runOnJS } from 'react-native-worklets';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Face } from '@/components/Face';
+import { ConditionLabel, Face } from '@/components/entries/condition';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
@@ -130,18 +132,23 @@ export default function CalendarTab() {
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
 
   const { data: res } = useGetApiEntries({ year, month: month + 1 });
-
-  const entriesByDay = useMemo(() => {
-    const map: Record<number, DayInfo> = {};
-    const entries = res?.status === 200 ? res.data : [];
-    for (const entry of entries) {
-      const day = new Date(entry.createdAt).getDate();
-      if (!map[day]) {
-        map[day] = { weather: entry.weather, level: entry.conditionLevel };
-      }
+  const entries = res?.status === 200 ? res.data : [];
+  const entriesByDay: Record<number, DayInfo> = {};
+  for (const entry of entries) {
+    const day = new Date(entry.createdAt).getDate();
+    if (!entriesByDay[day]) {
+      entriesByDay[day] = { weather: entry.weather, level: entry.conditionLevel };
     }
-    return map;
-  }, [res]);
+  }
+
+  // 選択日の詳細は entries から算出する（state に持たず、再フェッチに追従させる）
+  const details = selectedDay
+    ? entries.filter(
+        (item) =>
+          new Date(item.createdAt).toDateString() ===
+          new Date(year, month, selectedDay).toDateString(),
+      )
+    : [];
 
   // year*12 + month の通し番号で範囲を判定する
   const currentSerial = year * 12 + month;
@@ -242,6 +249,64 @@ export default function CalendarTab() {
           </Animated.View>
         </View>
       </GestureDetector>
+
+      <View className="mx-5 mt-3 flex-1">
+        <Text className="py-2 font-body-medium">
+          {selectedDay && format(new Date(year, month, selectedDay), 'M月d日(E)', { locale: ja })}
+        </Text>
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="gap-2 pb-2"
+          showsVerticalScrollIndicator={false}
+        >
+          {details.map((detail) => (
+            <View
+              key={detail.id}
+              className="gap-1 rounded-2xl bg-card px-4 py-3 shadow-sm shadow-black/5"
+            >
+              <View className="flex-row items-center justify-between bg-transparent">
+                <View className="flex-row items-center gap-2 bg-transparent">
+                  <Face level={detail.conditionLevel} size={32} />
+                  <ConditionLabel level={detail.conditionLevel} />
+                </View>
+                <View className="bg-transparent">
+                  <Text className="text-xs text-muted-foreground">
+                    {format(new Date(detail.createdAt), 'HH:mm', { locale: ja })}
+                  </Text>
+                </View>
+              </View>
+              {detail.weather && (
+                <View className="flex-row items-center gap-2 bg-transparent">
+                  <View className="flex-row items-center gap-1 bg-transparent">
+                    <Icon
+                      as={getWeatherIcon(detail.weather)}
+                      size={14}
+                      fill="currentColor"
+                      className="text-muted-foreground"
+                    />
+                    <Text className="text-sm text-muted-foreground">{detail.weather}</Text>
+                  </View>
+                  <View className="flex-row items-center gap-1 bg-transparent">
+                    <Icon as={Thermometer} size={12} className="text-muted-foreground" />
+                    <Text className="text-sm text-muted-foreground">
+                      {detail.temperature} <Text className="text-xs text-muted-foreground">℃</Text>
+                    </Text>
+                  </View>
+                  <View className="flex-row items-center gap-1 bg-transparent">
+                    <Icon as={Gauge} size={12} className="text-muted-foreground" />
+                    <Text className="text-sm text-muted-foreground">
+                      {detail.pressure} <Text className="text-xs text-muted-foreground">hPa</Text>
+                    </Text>
+                  </View>
+                </View>
+              )}
+              <View className="bg-transparent">
+                <Text>{detail.summary}</Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
