@@ -24,6 +24,17 @@ import type {
 } from '@tanstack/react-query';
 
 import { customFetch } from '../lib/custom-fetch';
+export type GetApiEntriesParams = {
+/**
+ * @nullable
+ */
+year?: number | null;
+/**
+ * @nullable
+ */
+month?: number | null;
+};
+
 export type GetApiEntries200Item = {
   id: string;
   summary: string;
@@ -175,17 +186,24 @@ export type getApiEntriesResponseError = (getApiEntriesResponse401) & {
 
 export type getApiEntriesResponse = (getApiEntriesResponseSuccess | getApiEntriesResponseError)
 
-export const getGetApiEntriesUrl = () => {
+export const getGetApiEntriesUrl = (params?: GetApiEntriesParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/entries`
+  return stringifiedParams.length > 0 ? `/api/entries?${stringifiedParams}` : `/api/entries`
 }
 
-export const getApiEntries = async ( options?: RequestInit): Promise<getApiEntriesResponse> => {
+export const getApiEntries = async (params?: GetApiEntriesParams, options?: RequestInit): Promise<getApiEntriesResponse> => {
 
-  return customFetch<getApiEntriesResponse>(getGetApiEntriesUrl(),
+  return customFetch<getApiEntriesResponse>(getGetApiEntriesUrl(params),
   {
     ...options,
     method: 'GET'
@@ -198,23 +216,23 @@ export const getApiEntries = async ( options?: RequestInit): Promise<getApiEntri
 
 
 
-export const getGetApiEntriesQueryKey = () => {
+export const getGetApiEntriesQueryKey = (params?: GetApiEntriesParams,) => {
     return [
-    `/api/entries`
+    `/api/entries`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getGetApiEntriesQueryOptions = <TData = Awaited<ReturnType<typeof getApiEntries>>, TError = GetApiEntries401>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetApiEntriesQueryOptions = <TData = Awaited<ReturnType<typeof getApiEntries>>, TError = GetApiEntries401>(params?: GetApiEntriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiEntriesQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetApiEntriesQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiEntries>>> = ({ signal }) => getApiEntries({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiEntries>>> = ({ signal }) => getApiEntries(params, { signal, ...requestOptions });
 
 
 
@@ -228,7 +246,7 @@ export type GetApiEntriesQueryError = GetApiEntries401
 
 
 export function useGetApiEntries<TData = Awaited<ReturnType<typeof getApiEntries>>, TError = GetApiEntries401>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>> & Pick<
+ params: undefined |  GetApiEntriesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiEntries>>,
           TError,
@@ -238,7 +256,7 @@ export function useGetApiEntries<TData = Awaited<ReturnType<typeof getApiEntries
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetApiEntries<TData = Awaited<ReturnType<typeof getApiEntries>>, TError = GetApiEntries401>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>> & Pick<
+ params?: GetApiEntriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiEntries>>,
           TError,
@@ -248,16 +266,16 @@ export function useGetApiEntries<TData = Awaited<ReturnType<typeof getApiEntries
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetApiEntries<TData = Awaited<ReturnType<typeof getApiEntries>>, TError = GetApiEntries401>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ params?: GetApiEntriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
 export function useGetApiEntries<TData = Awaited<ReturnType<typeof getApiEntries>>, TError = GetApiEntries401>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ params?: GetApiEntriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiEntries>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiEntriesQueryOptions(options)
+  const queryOptions = getGetApiEntriesQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
