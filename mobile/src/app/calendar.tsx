@@ -21,6 +21,9 @@ const WEEKDAYS = [
   { label: '土', className: 'text-blue-500' },
 ];
 
+// 遡れる下限は2016年1月（month index 0）。上限は当月（実行時に算出）。
+const MIN_MONTH_SERIAL = 2016 * 12;
+
 type DayInfo = { weather: string | null; level: number };
 type Cell = { day: number; currentMonth: boolean };
 
@@ -64,7 +67,7 @@ function DayCell({
       className={cn(
         'h-14 w-[14.28%] gap-1 border p-1',
         currentMonth ? 'bg-card' : 'bg-muted/40',
-        isSelected ? 'border-primary bg-primary/40' : 'border-border',
+        isSelected ? 'border-primary bg-primary/10' : 'border-border',
       )}
     >
       <View className="flex-row items-center justify-between bg-transparent">
@@ -104,15 +107,22 @@ export default function CalendarTab() {
     const entries = res?.status === 200 ? res.data : [];
     for (const entry of entries) {
       const day = new Date(entry.createdAt).getDate();
-      const current = map[day];
-      if (!current || entry.conditionLevel > current.level) {
+      if (!map[day]) {
         map[day] = { weather: entry.weather, level: entry.conditionLevel };
       }
     }
     return map;
   }, [res]);
 
+  // year*12 + month の通し番号で範囲を判定する
+  const currentSerial = year * 12 + month;
+  const maxMonthSerial = today.getFullYear() * 12 + today.getMonth();
+  const canGoPrev = currentSerial > MIN_MONTH_SERIAL;
+  const canGoNext = currentSerial < maxMonthSerial;
+
   const shiftMonth = (delta: number) => {
+    const nextSerial = currentSerial + delta;
+    if (nextSerial < MIN_MONTH_SERIAL || nextSerial > maxMonthSerial) return;
     const next = new Date(year, month + delta, 1);
     setYear(next.getFullYear());
     setMonth(next.getMonth());
@@ -134,6 +144,7 @@ export default function CalendarTab() {
             variant="ghost"
             size="icon"
             className="rounded-full"
+            disabled={!canGoPrev}
             onPress={() => shiftMonth(-1)}
           >
             <Icon as={ChevronLeft} size={18} className="text-muted-foreground" />
@@ -145,6 +156,7 @@ export default function CalendarTab() {
             variant="ghost"
             size="icon"
             className="rounded-full"
+            disabled={!canGoNext}
             onPress={() => shiftMonth(1)}
           >
             <Icon as={ChevronRight} size={18} className="text-muted-foreground" />

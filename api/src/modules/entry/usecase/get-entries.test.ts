@@ -1,11 +1,18 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { EntryRepository } from '../repository/entry-repository'
 import { getEntries } from './get-entries'
 
 vi.mock('../repository/entry-repository')
 
 describe('getEntries', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-10T00:00:00Z'))
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
 
   it('can get entries', async () => {
     const mockEntries = [
@@ -49,11 +56,11 @@ describe('getEntries', () => {
     const month = null
     const res = await getEntries(userId, year, month)
     expect(res).toEqual(mockEntries)
-    const nowDate = new Date()
+    const nowDate = new Date('2026-01-10T00:00:00Z')
     expect(EntryRepository.findAll).toHaveBeenCalledWith(
       '1',
-      nowDate.getFullYear(),
-      nowDate.getMonth() + 1,
+      nowDate.getUTCFullYear(),
+      nowDate.getUTCMonth() + 1,
     )
   })
 

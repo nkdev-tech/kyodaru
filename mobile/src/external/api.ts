@@ -26,13 +26,15 @@ import type {
 import { customFetch } from '../lib/custom-fetch';
 export type GetApiEntriesParams = {
 /**
- * @nullable
+ * @minimum 2000
+ * @maximum 2100
  */
-year?: number | null;
+year?: number;
 /**
- * @nullable
+ * @minimum 1
+ * @maximum 12
  */
-month?: number | null;
+month?: number;
 };
 
 export type GetApiEntries200Item = {

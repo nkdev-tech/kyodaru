@@ -45,6 +45,7 @@ describe('entries', () => {
     vi.mocked(getEntries).mockResolvedValue([])
     const res = await app.fetch(new Request('http://localhost/api/entries'))
     expect(res.status).toBe(200)
+    expect(getEntries).toHaveBeenCalledWith('1', undefined, undefined)
   })
 
   it('can get entries with year and month', async () => {

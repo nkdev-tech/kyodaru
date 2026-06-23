@@ -6,10 +6,10 @@ export async function getEntries(
   year?: number | null,
   month?: number | null,
 ): Promise<SelectEntry[]> {
-  const nowDate = new Date()
+  const nowJst = new Date(Date.now() + 9 * 60 * 60 * 1000)
   return await EntryRepository.findAll(
     userId,
-    year ?? nowDate.getFullYear(),
-    month ?? nowDate.getMonth() + 1,
+    year ?? nowJst.getUTCFullYear(),
+    month ?? nowJst.getUTCMonth() + 1,
   )
 }

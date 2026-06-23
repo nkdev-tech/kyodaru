@@ -1,4 +1,4 @@
-import { and, eq, gte, lt } from 'drizzle-orm'
+import { and, asc, eq, gte, lt } from 'drizzle-orm'
 import { db } from '../../../db'
 import { entryTable } from '../../../db/schema'
 import type { InsertEntry, SelectEntry } from '../entity/entry'
@@ -21,6 +21,7 @@ export const EntryRepository = {
           lt(entryTable.createdAt, endDate),
         ),
       )
+      .orderBy(asc(entryTable.createdAt))
   },
   async create(data: Omit<InsertEntry, 'id'>): Promise<SelectEntry> {
     return await db
