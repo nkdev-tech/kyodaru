@@ -2,11 +2,11 @@ import { env } from 'cloudflare:workers'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import app from '..'
 import { auth } from '../lib/auth'
-import { summarizeChat } from '../modules/ai/usecase/summarize-chat'
-import { EntryRepository } from '../modules/entry/repository/entry-repository'
+import { createEntry } from '../modules/entry/usecase/create-entry'
+import { getEntries } from '../modules/entry/usecase/get-entries'
 
-vi.mock('../modules/entry/repository/entry-repository')
-vi.mock('../modules/ai/usecase/summarize-chat')
+vi.mock('../modules/entry/usecase/get-entries')
+vi.mock('../modules/entry/usecase/create-entry')
 vi.mock('../lib/auth', () => ({
   auth: {
     api: {
@@ -42,14 +42,26 @@ describe('entries', () => {
       user: mockUser,
       session: mockSession,
     })
-    vi.mocked(EntryRepository.findAll).mockResolvedValue([])
+    vi.mocked(getEntries).mockResolvedValue([])
     const res = await app.fetch(new Request('http://localhost/api/entries'))
     expect(res.status).toBe(200)
   })
 
+  it('can get entries with year and month', async () => {
+    vi.mocked(auth.api.getSession).mockResolvedValue({
+      user: mockUser,
+      session: mockSession,
+    })
+    vi.mocked(getEntries).mockResolvedValue([])
+    const res = await app.fetch(
+      new Request('http://localhost/api/entries?year=2026&month=1'),
+    )
+    expect(res.status).toBe(200)
+    expect(getEntries).toHaveBeenCalledWith('1', 2026, 1)
+  })
+
   it('cannot get entries without user', async () => {
     vi.mocked(auth.api.getSession).mockResolvedValue(null)
-    vi.mocked(EntryRepository.findAll).mockResolvedValue([])
     const res = await app.fetch(new Request('http://localhost/api/entries'))
     expect(res.status).toBe(401)
   })
@@ -58,10 +70,6 @@ describe('entries', () => {
     vi.mocked(auth.api.getSession).mockResolvedValue({
       user: mockUser,
       session: mockSession,
-    })
-    vi.mocked(summarizeChat).mockResolvedValue({
-      summary: 'だるい',
-      conditionLevel: 4,
     })
     const mockEntry = {
       id: '1',
@@ -74,7 +82,7 @@ describe('entries', () => {
       weather: '快晴',
       createdAt: new Date('2026-01-01T00:00:00.000Z'),
     }
-    vi.mocked(EntryRepository.create).mockResolvedValue(mockEntry)
+    vi.mocked(createEntry).mockResolvedValue(mockEntry)
     const res = await app.fetch(
       new Request('http://localhost/api/entries', {
         method: 'POST',
@@ -86,7 +94,7 @@ describe('entries', () => {
           weather: '快晴',
         }),
       }),
-      env,
+      { ...env, GEMINI_API_KEY: 'dummy-key' },
     )
     expect(res.status).toBe(201)
     const body = await res.json()
@@ -94,17 +102,12 @@ describe('entries', () => {
       ...mockEntry,
       createdAt: mockEntry.createdAt.toISOString(),
     })
-    expect(EntryRepository.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        userId: '1',
-        summary: 'だるい',
-        rawText: '今日もだるい',
-        conditionLevel: 4,
-        pressure: 1014.9,
-        temperature: 23.5,
-        weather: '快晴',
-      }),
-    )
+    expect(createEntry).toHaveBeenCalledWith('1', 'dummy-key', {
+      rawText: '今日もだるい',
+      pressure: 1014.9,
+      temperature: 23.5,
+      weather: '快晴',
+    })
   })
 
   it('cannnot create entry with invalid value', async () => {
@@ -123,9 +126,10 @@ describe('entries', () => {
           weather: '快晴',
         }),
       }),
-      env,
+      { ...env, GEMINI_API_KEY: 'dummy-key' },
     )
     expect(res.status).toBe(400)
+    expect(createEntry).toHaveBeenCalledTimes(0)
   })
 
   it('cannot create entry without user', async () => {
@@ -144,5 +148,6 @@ describe('entries', () => {
       env,
     )
     expect(res.status).toBe(401)
+    expect(createEntry).toHaveBeenCalledTimes(0)
   })
 })
