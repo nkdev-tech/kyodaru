@@ -31,7 +31,7 @@ export function WeatherPanel({ weatherInfo }: Props) {
         )}
         <View className="gap-1 bg-transparent">
           <Text className="text-xs text-muted-foreground">
-            {format(new Date(), 'M/d(E)', { locale: ja })}
+            {format(new Date(), 'M月d日(E)', { locale: ja })}
           </Text>
           <Text className="font-body-bold text-lg">{weatherInfo.weather ?? '---'}</Text>
         </View>
