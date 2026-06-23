@@ -7,7 +7,7 @@ import { Directions, Gesture, GestureDetector } from 'react-native-gesture-handl
 import Animated, { SlideInLeft, SlideInRight } from 'react-native-reanimated';
 import { runOnJS } from 'react-native-worklets';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ConditionLabel, Face } from '@/components/entries/Face';
+import { ConditionLabel, Face } from '@/components/entries/condition';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
