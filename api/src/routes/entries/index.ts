@@ -7,11 +7,15 @@ import {
   createEntryResSchema,
   errorResBodySchema,
   getEntriesSchema,
+  querySchema,
 } from './schema'
 
 const getEntriesRoute = createRoute({
   method: 'get',
   path: '/',
+  request: {
+    query: querySchema,
+  },
   responses: {
     200: {
       content: {
@@ -98,7 +102,8 @@ const app = new OpenAPIHono<{
         401,
       )
     }
-    const res = await getEntries(userId)
+    const { year, month } = c.req.valid('query')
+    const res = await getEntries(userId, year, month)
     return c.json(res, 200)
   })
   .openapi(createEntryRoute, async (c) => {

@@ -24,6 +24,23 @@ export const getEntriesSchema = entrySchema.array()
 export const createEntryReqSchema = inputEntrySchema
 export const createEntryResSchema = entrySchema
 
+export const querySchema = z.object({
+  year: z.coerce
+    .number()
+    .int()
+    .min(2000)
+    .max(2100)
+    .optional()
+    .openapi({ example: 2026 }),
+  month: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(12)
+    .optional()
+    .openapi({ example: 1 }),
+})
+
 export const errorResBodySchema = z.object({
   success: z.boolean(),
   error: z.object({

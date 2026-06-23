@@ -119,7 +119,7 @@ export default function HomeScreen() {
     <>
       <SafeAreaView className="flex-1 bg-background">
         <View className="flex-1">
-          <View className="mx-5 my-3">
+          <View className="mx-5 my-3 h-8 flex-row items-center">
             <Logo />
           </View>
           <WeatherPanel weatherInfo={weatherInfo} />

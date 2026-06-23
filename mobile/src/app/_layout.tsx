@@ -13,6 +13,7 @@ import { useFonts } from 'expo-font';
 import { ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useColorScheme } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { NAV_THEME } from '@/lib/theme';
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
@@ -59,12 +60,14 @@ export default function TabLayout() {
   if ((!fontsLoaded && !fontError) || !sessionReady) return null;
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider value={colorScheme === 'dark' ? NAV_THEME.dark : NAV_THEME.light}>
-        <AnimatedSplashOverlay />
-        <AppTabs />
-      </ThemeProvider>
-      <PortalHost />
-    </QueryClientProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider value={colorScheme === 'dark' ? NAV_THEME.dark : NAV_THEME.light}>
+          <AnimatedSplashOverlay />
+          <AppTabs />
+        </ThemeProvider>
+        <PortalHost />
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }
