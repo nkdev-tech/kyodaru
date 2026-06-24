@@ -1,0 +1,74 @@
+name: oasdiff
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  breaking-changes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '24.x'
+          cache: 'npm'
+      - name: Fetch base ref
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: git fetch --depth=1 origin "$BASE_REF"
+      - name: Add worktree for base ref
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: git worktree add ../base-ref "origin/$BASE_REF"
+      - name: Install deps (base ref)
+        run: npm ci
+        working-directory: ../base-ref
+      - name: Start api (base ref)
+        run : npm run dev &
+        working-directory: ../base-ref/api
+        env:
+          BETTER_AUTH_SECRET: dummy-secret
+          BETTER_AUTH_URL: http://localhost:8787
+      - uses: ./.github/actions/wait-for-api/
+      - name: Fetch base spec
+        run: curl -sf http://localhost:8787/doc -o base-spec.json
+      - name: Stop api (base ref)
+        run: pkill -f "wrangler dev" || true
+      - name: Install deps (head ref)
+        run: npm ci
+      - name: Start api (head ref)
+        run: npm run dev &
+        working-directory: api
+        env:
+          BETTER_AUTH_SECRET: dummy-secret
+          BETTER_AUTH_URL: http://localhost:8787
+      - uses: ./.github/actions/wait-for-api/
+      - name: Fetch head spec
+        run: curl -sf http://localhost:8787/doc -o head-spec.json
+      - name: Stop api (head ref)
+        run: pkill -f "wrangler dev" || true
+      - name: Check major version bump
+        id: version-check
+        run: |
+          base_major=$(jq -r .version ../base-ref/api/package.json | cut -d. -f1)
+          head_major=$(jq -r .version api/package.json | cut -d. -f1)
+          if [ "$base_major" != "$head_major" ]; then
+            echo "bumped=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "bumped=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: oasdiff/oasdiff-action/breaking@ccc2442df0d99f8c419ed73e3de88641c91b3bc6 # v0.1.3
+        if: steps.version-check.outputs.bumped == 'false'
+        with:
+          base: base-spec.json
+          revision: head-spec.json
+          fail-on: WARN
+          github-token: ${{ github.token }}

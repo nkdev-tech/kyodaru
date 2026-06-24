@@ -1,0 +1,15 @@
+name: Wait for api to be ready
+
+description: "APIサーバーが起動するまでポーリングして待つ"
+
+runs:
+  using: composite
+  steps:
+    - run: |
+        for i in $(seq 1 30); do
+          curl -sf http://localhost:8787/doc > /dev/null && exit 0
+          sleep 1
+        done
+        echo "api did not start in time" >&2
+        exit 1
+      shell: bash
