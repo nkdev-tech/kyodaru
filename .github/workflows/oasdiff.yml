@@ -37,14 +37,7 @@ jobs:
         env:
           BETTER_AUTH_SECRET: dummy-secret
           BETTER_AUTH_URL: http://localhost:8787
-      - name: Wait for api to be ready
-        run: |
-          for i in $(seq 1 30); do
-            curl -sf http://localhost:8787/doc > /dev/null && exit 0
-            sleep 1
-          done
-          echo "api did not start in time" >&2
-          exit 1
+      - uses: ./.github/actions/wait-for-api/
       - name: Fetch base spec
         run: curl -sf http://localhost:8787/doc -o base-spec.json
       - name: Stop api (base ref)
@@ -57,13 +50,7 @@ jobs:
         env:
           BETTER_AUTH_SECRET: dummy-secret
           BETTER_AUTH_URL: http://localhost:8787
-      - name: Wait for head api
-        run: |
-          for i in $(seq 1 30); do
-            curl -sf http://localhost:8787/doc > /dev/null && exit 0
-            sleep 1
-          done
-          exit 1
+      - uses: ./.github/actions/wait-for-api/
       - name: Fetch head spec
         run: curl -sf http://localhost:8787/doc -o head-spec.json
       - name: Stop api (head ref)
