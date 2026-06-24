@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
 import { SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
-import { usePostApiAi, usePostApiEntries } from '@/external/api';
+import { useQueryClient } from '@tanstack/react-query';
+import { usePostApiAi, usePostApiEntries, getGetApiEntriesQueryKey } from '@/external/api';
 import { AIChat, UserChat } from '@/components/entries/chat';
 import { Logo } from '@/components/Logo';
 import { Mascot } from '@/components/Mascot';
@@ -23,6 +24,7 @@ export default function HomeScreen() {
   const [inputKey, setInputKey] = useState(0);
   const weatherInfo = useWeather();
   const insets = initialWindowMetrics?.insets ?? { top: 0, bottom: 0, left: 0, right: 0 };
+  const queryClient = useQueryClient();
   const { mutate: mutateEntry, isPending: isPendingEntry } = usePostApiEntries();
   const { mutate: mutateReply, isPending: isPendingReply } = usePostApiAi();
 
@@ -98,6 +100,7 @@ export default function HomeScreen() {
             Alert.alert('エラー', '送信に失敗しました。もう一度お試しください。');
             return;
           }
+          queryClient.invalidateQueries({ queryKey: getGetApiEntriesQueryKey() });
           setChatVisible(false);
           setMessages([]);
           setDraft('');
