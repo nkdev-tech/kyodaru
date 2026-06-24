@@ -105,11 +105,6 @@ export default function HomeScreen() {
           setMessages([]);
           setDraft('');
           setMascotKey((k) => k + 1);
-          // TODO: カレンダーと詳細が実装次第、消す
-          Alert.alert(
-            '保存完了',
-            `要約: ${result.data.summary}\n体調レベル: ${result.data.conditionLevel}\n${result.data.weather}　${result.data.temperature?.toFixed(1)}度　${result.data.pressure?.toFixed(1)}hPa`,
-          );
         },
         onError() {
           Alert.alert('エラー', '送信に失敗しました。もう一度お試しください。');
