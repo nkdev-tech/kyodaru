@@ -8,7 +8,10 @@
     "scheme": "mobile",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "bundleIdentifier": "com.nkdevtech.kyodaru"
+      "bundleIdentifier": "com.nkdevtech.kyodaru",
+      "infoPlist": {
+        "CFBundleDisplayName": "今日だる"
+      }
     },
     "android": {
       "package": "com.nkdevtech.kyodaru",
@@ -44,6 +47,12 @@
         "expo-location",
         {
           "locationWhenInUsePermission": "位置情報の使用を許可しますか"
+        }
+      ],
+      [
+        "./plugins/withAndroidAppLabel",
+        {
+          "label": "今日だる"
         }
       ]
     ],
