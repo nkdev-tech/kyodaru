@@ -1,31 +1,15 @@
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
-import semver from 'semver'
 import { type AuthType, auth } from './lib/auth'
-import { MIN_SUPPORTED_APP_VERSION } from './lib/config'
 import ai from './routes/ai'
 import entries from './routes/entries'
+import versionCheck from './routes/version-check'
 
 const app = new OpenAPIHono<{
   Bindings: CloudflareBindings
   Variables: AuthType
 }>({
   strict: false,
-})
-
-app.use('*', async (c, next) => {
-  const version = c.req.raw.headers.get('X-App-Version')
-  if (!version) {
-    await next()
-    return
-  }
-  if (semver.lt(version, MIN_SUPPORTED_APP_VERSION)) {
-    return c.json(
-      { error: 'FORCE_UPDATE_REQUIRED', minVersion: MIN_SUPPORTED_APP_VERSION },
-      426,
-    )
-  }
-  await next()
 })
 
 app.use('*', async (c, next) => {
@@ -59,6 +43,9 @@ app.on(['POST', 'GET'], '/api/auth/*', (c) => {
   return auth.handler(c.req.raw)
 })
 
-app.route('/api/entries', entries).route('/api/ai', ai)
+app
+  .route('/api/entries', entries)
+  .route('/api/ai', ai)
+  .route('/api/version-check', versionCheck)
 
 export default app

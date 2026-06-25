@@ -2,9 +2,7 @@ import { env } from 'cloudflare:workers'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import app from '..'
 import { auth } from '../lib/auth'
-import { getEntries } from '../modules/entry/usecase/get-entries'
 
-vi.mock('../modules/entry/usecase/get-entries')
 vi.mock('../lib/config', () => ({ MIN_SUPPORTED_APP_VERSION: '10.0.0' }))
 vi.mock('../lib/auth', () => ({
   auth: {
@@ -42,9 +40,8 @@ describe('force-update', () => {
       user: mockUser,
       session: mockSession,
     })
-    vi.mocked(getEntries).mockResolvedValue([])
     const res = await app.fetch(
-      new Request('http://localhost/api/entries', {
+      new Request('http://localhost/api/version-check', {
         headers: { 'X-App-Version': '10.0.0' },
       }),
       env,
@@ -57,9 +54,8 @@ describe('force-update', () => {
       user: mockUser,
       session: mockSession,
     })
-    vi.mocked(getEntries).mockResolvedValue([])
     const res = await app.fetch(
-      new Request('http://localhost/api/entries'),
+      new Request('http://localhost/api/version-check'),
       env,
     )
     expect(res.status).toBe(200)
@@ -70,9 +66,8 @@ describe('force-update', () => {
       user: mockUser,
       session: mockSession,
     })
-    vi.mocked(getEntries).mockResolvedValue([])
     const res = await app.fetch(
-      new Request('http://localhost/api/entries', {
+      new Request('http://localhost/api/version-check', {
         headers: { 'X-App-Version': '9.0.0' },
       }),
       env,
