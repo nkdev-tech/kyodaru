@@ -39,6 +39,13 @@ export const querySchema = z.object({
     .max(12)
     .optional()
     .openapi({ example: 1 }),
+  day: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(31)
+    .optional()
+    .openapi({ example: 1 }),
 })
 
 export const errorResBodySchema = z.object({

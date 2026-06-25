@@ -1,6 +1,9 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import type { AuthType } from '../../lib/auth'
-import { createEntry } from '../../modules/entry/usecase/create-entry'
+import {
+  createEntry,
+  EntriesLimitError,
+} from '../../modules/entry/usecase/create-entry'
 import { getEntries } from '../../modules/entry/usecase/get-entries'
 import {
   createEntryReqSchema,
@@ -73,6 +76,14 @@ const createEntryRoute = createRoute({
       },
       description: 'Unauthorized',
     },
+    429: {
+      content: {
+        'application/json': {
+          schema: errorResBodySchema,
+        },
+      },
+      description: 'Too Many Requests',
+    },
     500: {
       content: {
         'application/json': {
@@ -102,8 +113,8 @@ const app = new OpenAPIHono<{
         401,
       )
     }
-    const { year, month } = c.req.valid('query')
-    const res = await getEntries(userId, year, month)
+    const { year, month, day } = c.req.valid('query')
+    const res = await getEntries(userId, year, month, day)
     return c.json(res, 200)
   })
   .openapi(createEntryRoute, async (c) => {
@@ -126,6 +137,18 @@ const app = new OpenAPIHono<{
       return c.json(res, 201)
     } catch (e) {
       console.error(e)
+      if (e instanceof EntriesLimitError) {
+        return c.json(
+          {
+            success: false,
+            error: {
+              name: 'Too Many Requests',
+              message: '本日の記録回数の上限に達しました',
+            },
+          },
+          429,
+        )
+      }
       return c.json(
         {
           success: false,

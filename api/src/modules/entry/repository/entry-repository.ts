@@ -8,9 +8,14 @@ export const EntryRepository = {
     userId: string,
     year: number,
     month: number,
+    day?: number,
   ): Promise<SelectEntry[]> {
-    const startDate = new Date(Date.UTC(year, month - 1, 1, -9))
-    const endDate = new Date(Date.UTC(year, month, 1, -9))
+    const startDate = day
+      ? new Date(Date.UTC(year, month - 1, day, -9))
+      : new Date(Date.UTC(year, month - 1, 1, -9))
+    const endDate = day
+      ? new Date(Date.UTC(year, month - 1, day + 1, -9))
+      : new Date(Date.UTC(year, month, 1, -9))
     return await db
       .select()
       .from(entryTable)
