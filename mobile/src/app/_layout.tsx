@@ -1,7 +1,7 @@
 import '../global.css';
 
-import { useEffect, useRef, useState } from 'react';
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { focusManager, QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import {
   MPLUSRounded1c_400Regular,
   MPLUSRounded1c_500Medium,
@@ -34,9 +34,10 @@ export function AppContent() {
     MPLUSRounded1c_700Bold,
   });
   const [sessionReady, setSessionReady] = useState(false);
-  const appState = useRef(AppState.currentState);
-  const { data, refetch: refetchVersion, isLoading: isVersionLoading } = useGetApiVersionCheck();
-  const { isLoading: isWeatherLoading, refetch: refetchWeather } = useQuery(weatherQueryOptions);
+  const { data, isLoading: isVersionLoading } = useGetApiVersionCheck({
+    query: { retry: 1 },
+  });
+  const { isLoading: isWeatherLoading } = useQuery(weatherQueryOptions);
 
   useEffect(() => {
     (async () => {
@@ -84,18 +85,14 @@ export function AppContent() {
   }, [data]);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
-      if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
-        refetchVersion();
-        refetchWeather();
-      }
-      appState.current = nextAppState;
+    const subscription = AppState.addEventListener('change', (status: AppStateStatus) => {
+      focusManager.setFocused(status === 'active');
     });
 
     return () => {
       subscription.remove();
     };
-  }, [refetchVersion, refetchWeather]);
+  }, []);
 
   if ((!fontsLoaded && !fontError) || !sessionReady || isVersionLoading) return null;
 

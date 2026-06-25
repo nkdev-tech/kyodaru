@@ -14,7 +14,7 @@ export async function customFetch<T>(url: string, options: RequestInit): Promise
     ...options,
     headers: getHeaders({
       ...options.headers,
-      'X-App-Version': Constants.expoConfig?.version ?? '0.0.0',
+      ...(Constants.expoConfig?.version ? { 'X-App-Version': Constants.expoConfig.version } : {}),
     }),
   };
 

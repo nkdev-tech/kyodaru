@@ -69,17 +69,27 @@ type WeatherInfo = {
 };
 const EMPTY_WEATHER: WeatherInfo = { pressure: null, temperature: null, weather: null };
 
+function timeout<T>(ms: number, fallback: T): Promise<T> {
+  return new Promise((resolve) => setTimeout(() => resolve(fallback), ms));
+}
+
 async function fetchCurrentWeather(): Promise<WeatherInfo> {
   const { status } = await Location.requestForegroundPermissionsAsync();
   if (status !== 'granted') return EMPTY_WEATHER;
 
-  const currentLocation = await Location.getCurrentPositionAsync({});
+  const currentLocation = await Promise.race([
+    Location.getCurrentPositionAsync({}),
+    timeout(5000, null),
+  ]);
+  if (!currentLocation) return EMPTY_WEATHER;
+
   return getWeather(currentLocation.coords.latitude, currentLocation.coords.longitude);
 }
 
 export const weatherQueryOptions = queryOptions({
   queryKey: ['weather'],
   queryFn: fetchCurrentWeather,
+  staleTime: 10 * 60 * 1000,
 });
 
 export function useWeather() {

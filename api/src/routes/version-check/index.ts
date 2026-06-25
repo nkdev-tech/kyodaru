@@ -1,7 +1,7 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import semver from 'semver'
 import { MIN_SUPPORTED_APP_VERSION } from '../../lib/config'
-import { errorResBodySchema, versionCheckSchema } from './schema'
+import { versionCheckSchema, versionErrorSchema } from './schema'
 
 const versionCheckRoute = createRoute({
   method: 'get',
@@ -18,7 +18,7 @@ const versionCheckRoute = createRoute({
     426: {
       content: {
         'application/json': {
-          schema: errorResBodySchema,
+          schema: versionErrorSchema,
         },
       },
       description: '',
