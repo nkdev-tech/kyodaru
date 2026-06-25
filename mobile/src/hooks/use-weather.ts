@@ -1,6 +1,6 @@
 import * as Location from 'expo-location';
 import { fetchWeatherApi } from 'openmeteo';
-import { useEffect, useState } from 'react';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 
 const WEATHER_CODE: Record<number, string> = {
   0: '快晴',
@@ -62,34 +62,37 @@ async function getWeather(latitude?: number, longitude?: number) {
   }
 }
 
+type WeatherInfo = {
+  pressure: number | null;
+  temperature: number | null;
+  weather: string | null;
+};
+const EMPTY_WEATHER: WeatherInfo = { pressure: null, temperature: null, weather: null };
+
+function timeout<T>(ms: number, fallback: T): Promise<T> {
+  return new Promise((resolve) => setTimeout(() => resolve(fallback), ms));
+}
+
+async function fetchCurrentWeather(): Promise<WeatherInfo> {
+  const { status } = await Location.requestForegroundPermissionsAsync();
+  if (status !== 'granted') return EMPTY_WEATHER;
+
+  const currentLocation = await Promise.race([
+    Location.getCurrentPositionAsync({}),
+    timeout(5000, null),
+  ]);
+  if (!currentLocation) return EMPTY_WEATHER;
+
+  return getWeather(currentLocation.coords.latitude, currentLocation.coords.longitude);
+}
+
+export const weatherQueryOptions = queryOptions({
+  queryKey: ['weather'],
+  queryFn: fetchCurrentWeather,
+  staleTime: 10 * 60 * 1000,
+});
+
 export function useWeather() {
-  const [weatherInfo, setWeatherInfo] = useState<{
-    pressure: number | null;
-    temperature: number | null;
-    weather: string | null;
-  }>({ pressure: null, temperature: null, weather: null });
-
-  useEffect(() => {
-    async function getCurrentLocation() {
-      try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') return;
-
-        let currentLocation = await Location.getCurrentPositionAsync({});
-
-        const { pressure, temperature, weather } = await getWeather(
-          currentLocation.coords.latitude,
-          currentLocation.coords.longitude,
-        );
-        setWeatherInfo({ pressure, temperature, weather });
-      } catch (e) {
-        console.error(e);
-        return;
-      }
-    }
-
-    getCurrentLocation();
-  }, []);
-
-  return weatherInfo;
+  const { data } = useQuery(weatherQueryOptions);
+  return data ?? EMPTY_WEATHER;
 }

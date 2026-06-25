@@ -1,5 +1,6 @@
 import { authClient } from './auth-client';
 import { apiBaseUrl } from './env';
+import Constants from 'expo-constants';
 
 function getHeaders(headers?: HeadersInit): HeadersInit {
   return {
@@ -11,7 +12,10 @@ function getHeaders(headers?: HeadersInit): HeadersInit {
 export async function customFetch<T>(url: string, options: RequestInit): Promise<T> {
   const requestInit: RequestInit = {
     ...options,
-    headers: getHeaders(options.headers),
+    headers: getHeaders({
+      ...options.headers,
+      ...(Constants.expoConfig?.version ? { 'X-App-Version': Constants.expoConfig.version } : {}),
+    }),
   };
 
   const request = new Request(`${apiBaseUrl}${url}`, requestInit);

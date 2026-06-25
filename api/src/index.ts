@@ -3,6 +3,7 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { type AuthType, auth } from './lib/auth'
 import ai from './routes/ai'
 import entries from './routes/entries'
+import versionCheck from './routes/version-check'
 
 const app = new OpenAPIHono<{
   Bindings: CloudflareBindings
@@ -42,6 +43,9 @@ app.on(['POST', 'GET'], '/api/auth/*', (c) => {
   return auth.handler(c.req.raw)
 })
 
-app.route('/api/entries', entries).route('/api/ai', ai)
+app
+  .route('/api/entries', entries)
+  .route('/api/ai', ai)
+  .route('/api/version-check', versionCheck)
 
 export default app
