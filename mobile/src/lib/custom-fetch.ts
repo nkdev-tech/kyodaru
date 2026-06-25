@@ -12,7 +12,10 @@ function getHeaders(headers?: HeadersInit): HeadersInit {
 export async function customFetch<T>(url: string, options: RequestInit): Promise<T> {
   const requestInit: RequestInit = {
     ...options,
-    headers: getHeaders({ ...options.headers, 'X-App-Version': Constants.expoConfig?.version ?? '0.0.0' }),
+    headers: getHeaders({
+      ...options.headers,
+      'X-App-Version': Constants.expoConfig?.version ?? '0.0.0',
+    }),
   };
 
   const request = new Request(`${apiBaseUrl}${url}`, requestInit);

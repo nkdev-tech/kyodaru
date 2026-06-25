@@ -165,6 +165,11 @@ export type PostApiAi500 = {
   error: PostApiAi500Error;
 };
 
+export type GetApiVersionCheck426 = {
+  error: string;
+  minVersion: string;
+};
+
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
@@ -470,3 +475,111 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getPostApiAiMutationOptions(options), queryClient);
     }
+
+export type getApiVersionCheckResponse200 = {
+  data: boolean
+  status: 200
+}
+
+export type getApiVersionCheckResponse426 = {
+  data: GetApiVersionCheck426
+  status: 426
+}
+
+export type getApiVersionCheckResponseSuccess = (getApiVersionCheckResponse200) & {
+  headers: Headers;
+};
+export type getApiVersionCheckResponseError = (getApiVersionCheckResponse426) & {
+  headers: Headers;
+};
+
+export type getApiVersionCheckResponse = (getApiVersionCheckResponseSuccess | getApiVersionCheckResponseError)
+
+export const getGetApiVersionCheckUrl = () => {
+
+
+
+
+  return `/api/version-check`
+}
+
+export const getApiVersionCheck = async ( options?: RequestInit): Promise<getApiVersionCheckResponse> => {
+
+  return customFetch<getApiVersionCheckResponse>(getGetApiVersionCheckUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetApiVersionCheckQueryKey = () => {
+    return [
+    `/api/version-check`
+    ] as const;
+    }
+
+
+export const getGetApiVersionCheckQueryOptions = <TData = Awaited<ReturnType<typeof getApiVersionCheck>>, TError = GetApiVersionCheck426>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiVersionCheck>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiVersionCheckQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiVersionCheck>>> = ({ signal }) => getApiVersionCheck({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiVersionCheck>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiVersionCheckQueryResult = NonNullable<Awaited<ReturnType<typeof getApiVersionCheck>>>
+export type GetApiVersionCheckQueryError = GetApiVersionCheck426
+
+
+export function useGetApiVersionCheck<TData = Awaited<ReturnType<typeof getApiVersionCheck>>, TError = GetApiVersionCheck426>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiVersionCheck>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiVersionCheck>>,
+          TError,
+          Awaited<ReturnType<typeof getApiVersionCheck>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiVersionCheck<TData = Awaited<ReturnType<typeof getApiVersionCheck>>, TError = GetApiVersionCheck426>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiVersionCheck>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiVersionCheck>>,
+          TError,
+          Awaited<ReturnType<typeof getApiVersionCheck>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiVersionCheck<TData = Awaited<ReturnType<typeof getApiVersionCheck>>, TError = GetApiVersionCheck426>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiVersionCheck>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetApiVersionCheck<TData = Awaited<ReturnType<typeof getApiVersionCheck>>, TError = GetApiVersionCheck426>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiVersionCheck>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiVersionCheckQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
