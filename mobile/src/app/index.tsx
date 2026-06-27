@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
+import { KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
 import { SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
+import { toast } from 'sonner-native';
 import {
   useGetApiEntries,
   usePostApiAi,
@@ -47,7 +48,7 @@ export default function HomeScreen() {
   const isLimitReached = todayEntries.length >= DAILY_ENTRY_LIMIT;
 
   useEffect(() => {
-    if (chatVisible) {
+    if (chatVisible && messages.length === 0) {
       // チャット画面が表示されてから少し遅らせて初期メッセージを出し、
       // AIが返答しているように見せる演出
       const timer = setTimeout(() => {
@@ -77,7 +78,7 @@ export default function HomeScreen() {
       {
         onSuccess(result) {
           if (result.status !== 200) {
-            Alert.alert('エラー', '送信に失敗しました。もう一度お試しください。');
+            toast.error('送信に失敗しました。もう一度お試しください');
             return;
           }
           const replies = result.data.reply.split('\n\n').filter((t) => t.trim());
@@ -87,7 +88,7 @@ export default function HomeScreen() {
           ]);
         },
         onError() {
-          Alert.alert('エラー', '送信に失敗しました。もう一度お試しください。');
+          toast.error('送信に失敗しました。もう一度お試しください');
         },
       },
     );
@@ -95,11 +96,12 @@ export default function HomeScreen() {
 
   const handleClose = () => {
     if (isPendingEntry) return;
-    if (!messages.some((m) => m.role === 'user')) {
-      setChatVisible(false);
-      setMascotKey((k) => k + 1);
-      return;
-    }
+
+    setChatVisible(false);
+    setDraft('');
+    setMascotKey((k) => k + 1);
+
+    if (!messages.some((m) => m.role === 'user')) return;
 
     mutateEntry(
       {
@@ -115,17 +117,14 @@ export default function HomeScreen() {
       {
         onSuccess(result) {
           if (result.status !== 201) {
-            Alert.alert('エラー', '送信に失敗しました。もう一度お試しください。');
+            toast.error('送信に失敗しました。もう一度お試しください');
             return;
           }
           queryClient.invalidateQueries({ queryKey: getGetApiEntriesQueryKey() });
-          setChatVisible(false);
           setMessages([]);
-          setDraft('');
-          setMascotKey((k) => k + 1);
         },
         onError() {
-          Alert.alert('エラー', '送信に失敗しました。もう一度お試しください。');
+          toast.error('送信に失敗しました。もう一度お試しください');
         },
       },
     );
