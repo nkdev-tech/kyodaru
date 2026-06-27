@@ -50,16 +50,20 @@ function main() {
       }
     }
   }
+  console.log('\n\n');
+  console.log('--------------------');
+  console.log('\n\n');
 
   if (violations.length > 0) {
-    console.error('Icons not wrapped in <Icon as={...}>:');
+    console.error('The following icons are not wrapped:');
     for (const v of violations) {
-      console.error(`  ${v.file}:${v.lines.join(',')}: <${v.name}>`);
+      console.error(`  - ${v.file}:${v.lines.join(',')}: <${v.name}>`);
     }
+    console.error('Please use <Icon as={...}>.')
     process.exit(1);
   }
 
-  console.log('Icon check succeeded');
+  console.log('All icons passed.');
 }
 
 main();
