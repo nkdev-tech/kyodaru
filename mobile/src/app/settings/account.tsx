@@ -6,14 +6,14 @@ import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
 import { authClient } from '@/lib/auth-client';
-import { useClipboad } from '@/hooks/use-clipboad';
+import { useClipboard } from '@/hooks/use-clipboard';
 import { ChevronLeft, Copy } from 'lucide-react-native';
 
 export default function AccountScreen() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const userId = session?.user.id ?? '';
-  const { copyToClipboard } = useClipboad();
+  const { copyToClipboard } = useClipboard();
 
   return (
     <SafeAreaView className="mx-5 flex-1 bg-background">
