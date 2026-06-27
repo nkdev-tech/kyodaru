@@ -29,20 +29,24 @@ function getLucideImportNames(content) {
 
 function findBareUsages(content, name) {
   const tagPattern = new RegExp(`<\\s*${name}(?=[\\s/>])`, 'g');
-  return [...content.matchAll(tagPattern)];
+  return [...content.matchAll(tagPattern)].map((m) => content.slice(0, m.index).split('\n').length);
 }
 
 function main() {
   const violations = [];
 
   for (const file of listTargetFiles(SRC_DIR)) {
+    const relativeFile = path.relative(process.cwd(), file);
     const content = fs.readFileSync(file, 'utf8');
     const iconNames = getLucideImportNames(content);
 
     for (const name of iconNames) {
-      const usages = findBareUsages(content, name);
-      if (usages.length > 0) {
-        violations.push({ file: path.relative(process.cwd(), file), name, count: usages.length });
+      const lines = findBareUsages(content, name);
+      if (lines.length > 0) {
+        console.log(`${relativeFile}: <${name}>...violation (line ${lines.join(', ')})`);
+        violations.push({ file: relativeFile, name, lines });
+      } else {
+        console.log(`${relativeFile}: <${name}>...ok`);
       }
     }
   }
@@ -50,7 +54,7 @@ function main() {
   if (violations.length > 0) {
     console.error('Icons not wrapped in <Icon as={...}>:');
     for (const v of violations) {
-      console.error(`  ${v.file}: <${v.name}> x${v.count}`);
+      console.error(`  ${v.file}:${v.lines.join(',')}: <${v.name}>`);
     }
     process.exit(1);
   }
