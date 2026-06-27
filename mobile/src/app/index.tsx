@@ -16,6 +16,7 @@ import { Logo } from '@/components/Logo';
 import { Mascot } from '@/components/Mascot';
 import { WeatherPanel } from '@/components/WeatherPanel';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Icon } from '@/components/ui/icon';
 import { Textarea } from '@/components/ui/textarea';
 import { Text } from '@/components/ui/text';
@@ -165,23 +166,22 @@ export default function HomeScreen() {
               showsVerticalScrollIndicator={false}
             >
               {todayEntries.map((entry) => (
-                <View
-                  key={entry.id}
-                  className="flex-row gap-3 rounded-2xl bg-card px-4 py-3 shadow-sm shadow-black/5"
-                >
-                  <Face level={entry.conditionLevel} size={40} />
-                  <View className="flex-1 gap-1 bg-transparent">
-                    <View className="flex-row items-center justify-between bg-transparent">
-                      <ConditionLabel level={entry.conditionLevel} />
-                      <Text className="text-xs text-muted-foreground">
-                        {format(new Date(entry.createdAt), 'HH:mm', { locale: ja })}
-                      </Text>
+                <Card key={entry.id}>
+                  <CardContent className="flex-row gap-3">
+                    <Face level={entry.conditionLevel} size={40} />
+                    <View className="flex-1 gap-1 bg-transparent">
+                      <View className="flex-row items-center justify-between bg-transparent">
+                        <ConditionLabel level={entry.conditionLevel} />
+                        <Text className="text-xs text-muted-foreground">
+                          {format(new Date(entry.createdAt), 'HH:mm', { locale: ja })}
+                        </Text>
+                      </View>
+                      <View className="bg-transparent">
+                        <Text className="text-sm">{entry.summary}</Text>
+                      </View>
                     </View>
-                    <View className="bg-transparent">
-                      <Text className="text-sm">{entry.summary}</Text>
-                    </View>
-                  </View>
-                </View>
+                  </CardContent>
+                </Card>
               ))}
             </ScrollView>
           </View>

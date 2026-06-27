@@ -9,6 +9,7 @@ import { runOnJS } from 'react-native-worklets';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ConditionLabel, Face } from '@/components/entries/condition';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
@@ -263,50 +264,50 @@ export default function CalendarTab() {
           showsVerticalScrollIndicator={false}
         >
           {details.map((detail) => (
-            <View
-              key={detail.id}
-              className="gap-1 rounded-2xl bg-card px-4 py-3 shadow-sm shadow-black/5"
-            >
-              <View className="flex-row items-center justify-between bg-transparent">
-                <View className="flex-row items-center gap-2 bg-transparent">
-                  <Face level={detail.conditionLevel} size={28} />
-                  <ConditionLabel level={detail.conditionLevel} />
+            <Card key={detail.id}>
+              <CardContent className="gap-1">
+                <View className="flex-row items-center justify-between bg-transparent">
+                  <View className="flex-row items-center gap-2 bg-transparent">
+                    <Face level={detail.conditionLevel} size={28} />
+                    <ConditionLabel level={detail.conditionLevel} />
+                  </View>
+                  <View className="bg-transparent">
+                    <Text className="text-xs text-muted-foreground">
+                      {format(new Date(detail.createdAt), 'HH:mm', { locale: ja })}
+                    </Text>
+                  </View>
                 </View>
+                {detail.weather && (
+                  <View className="flex-row items-center gap-2 bg-transparent">
+                    <View className="flex-row items-center gap-1 bg-transparent">
+                      <Icon
+                        as={getWeatherIcon(detail.weather)}
+                        size={14}
+                        fill="currentColor"
+                        className="text-muted-foreground"
+                      />
+                      <Text className="text-sm text-muted-foreground">{detail.weather}</Text>
+                    </View>
+                    <View className="flex-row items-center gap-1 bg-transparent">
+                      <Icon as={Thermometer} size={12} className="text-muted-foreground" />
+                      <Text className="text-sm text-muted-foreground">
+                        {detail.temperature}{' '}
+                        <Text className="text-xs text-muted-foreground">℃</Text>
+                      </Text>
+                    </View>
+                    <View className="flex-row items-center gap-1 bg-transparent">
+                      <Icon as={Gauge} size={12} className="text-muted-foreground" />
+                      <Text className="text-sm text-muted-foreground">
+                        {detail.pressure} <Text className="text-xs text-muted-foreground">hPa</Text>
+                      </Text>
+                    </View>
+                  </View>
+                )}
                 <View className="bg-transparent">
-                  <Text className="text-xs text-muted-foreground">
-                    {format(new Date(detail.createdAt), 'HH:mm', { locale: ja })}
-                  </Text>
+                  <Text>{detail.summary}</Text>
                 </View>
-              </View>
-              {detail.weather && (
-                <View className="flex-row items-center gap-2 bg-transparent">
-                  <View className="flex-row items-center gap-1 bg-transparent">
-                    <Icon
-                      as={getWeatherIcon(detail.weather)}
-                      size={14}
-                      fill="currentColor"
-                      className="text-muted-foreground"
-                    />
-                    <Text className="text-sm text-muted-foreground">{detail.weather}</Text>
-                  </View>
-                  <View className="flex-row items-center gap-1 bg-transparent">
-                    <Icon as={Thermometer} size={12} className="text-muted-foreground" />
-                    <Text className="text-sm text-muted-foreground">
-                      {detail.temperature} <Text className="text-xs text-muted-foreground">℃</Text>
-                    </Text>
-                  </View>
-                  <View className="flex-row items-center gap-1 bg-transparent">
-                    <Icon as={Gauge} size={12} className="text-muted-foreground" />
-                    <Text className="text-sm text-muted-foreground">
-                      {detail.pressure} <Text className="text-xs text-muted-foreground">hPa</Text>
-                    </Text>
-                  </View>
-                </View>
-              )}
-              <View className="bg-transparent">
-                <Text>{detail.summary}</Text>
-              </View>
-            </View>
+              </CardContent>
+            </Card>
           ))}
         </ScrollView>
       </View>
