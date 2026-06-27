@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
 import { Leader } from '@/components/ui/leader';
@@ -15,9 +16,11 @@ type Props = {
 export function UserChat({ message }: Props) {
   return (
     <View className="mb-2 items-end">
-      <View className="max-w-[76%] rounded-2xl bg-card px-4 py-3">
-        <Text>{message}</Text>
-      </View>
+      <Card className="max-w-[76%]">
+        <CardContent>
+          <Text>{message}</Text>
+        </CardContent>
+      </Card>
     </View>
   );
 }
@@ -63,22 +66,24 @@ export function AIChat({ message, hideIcon, onSelect, disabled, isLoading }: Pro
           </AvatarFallback>
         </Avatar>
       )}
-      <View className="max-w-[76%] gap-1 rounded-2xl bg-accent px-4 py-3">
-        {isLoading ? <Leader /> : text && <Text>{text}</Text>}
-        {options.map((option, i) => {
-          return (
-            <Button
-              key={i}
-              variant="secondary"
-              className="h-auto"
-              onPress={() => onSelect?.(option)}
-              disabled={disabled}
-            >
-              <Text>{option}</Text>
-            </Button>
-          );
-        })}
-      </View>
+      <Card className="max-w-[76%] bg-accent">
+        <CardContent className="gap-1">
+          {isLoading ? <Leader /> : text && <Text>{text}</Text>}
+          {options.map((option, i) => {
+            return (
+              <Button
+                key={i}
+                variant="secondary"
+                className="h-auto"
+                onPress={() => onSelect?.(option)}
+                disabled={disabled}
+              >
+                <Text>{option}</Text>
+              </Button>
+            );
+          })}
+        </CardContent>
+      </Card>
     </View>
   );
 }
