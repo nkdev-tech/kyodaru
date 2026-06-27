@@ -2,8 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
 import { SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
 import { useQueryClient } from '@tanstack/react-query';
-import { usePostApiAi, usePostApiEntries, getGetApiEntriesQueryKey } from '@/external/api';
+import { format } from 'date-fns';
+import { ja } from 'date-fns/locale';
+import {
+  useGetApiEntries,
+  usePostApiAi,
+  usePostApiEntries,
+  getGetApiEntriesQueryKey,
+} from '@/external/api';
 import { AIChat, UserChat } from '@/components/entries/chat';
+import { ConditionLabel, Face } from '@/components/entries/condition';
 import { Logo } from '@/components/Logo';
 import { Mascot } from '@/components/Mascot';
 import { WeatherPanel } from '@/components/WeatherPanel';
@@ -14,6 +22,7 @@ import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
 import { useWeather } from '@/hooks/use-weather';
 import { MessageCircleMore, Send, X } from 'lucide-react-native';
+import { DAILY_ENTRY_LIMIT } from '@/lib/config';
 
 export default function HomeScreen() {
   const [chatVisible, setChatVisible] = useState(false);
@@ -25,8 +34,16 @@ export default function HomeScreen() {
   const weatherInfo = useWeather();
   const insets = initialWindowMetrics?.insets ?? { top: 0, bottom: 0, left: 0, right: 0 };
   const queryClient = useQueryClient();
+  const today = new Date();
+  const { data, isLoading } = useGetApiEntries({
+    year: today.getFullYear(),
+    month: today.getMonth() + 1,
+    day: today.getDate(),
+  });
   const { mutate: mutateEntry, isPending: isPendingEntry } = usePostApiEntries();
   const { mutate: mutateReply, isPending: isPendingReply } = usePostApiAi();
+  const todayEntries = data?.status === 200 ? data?.data : [];
+  const isLimitReached = todayEntries.length >= DAILY_ENTRY_LIMIT;
 
   useEffect(() => {
     if (chatVisible) {
@@ -116,17 +133,57 @@ export default function HomeScreen() {
   return (
     <>
       <SafeAreaView className="flex-1 bg-background">
-        <View className="flex-1">
-          <View className="mx-5 my-3 h-8 flex-row items-center">
+        <View className="mx-5 flex-1">
+          <View className="my-3 h-8 flex-row items-center">
             <Logo />
           </View>
-          <WeatherPanel weatherInfo={weatherInfo} />
-          <View className="flex-1 items-center justify-center gap-6 bg-transparent">
+          <WeatherPanel weatherInfo={weatherInfo} today={today} />
+          <View className="my-20 flex-1 items-center justify-center gap-4 bg-transparent">
             <Mascot key={mascotKey} />
-            <Button className="rounded-full" onPress={() => setChatVisible(true)}>
-              <Icon as={MessageCircleMore} size={24} />
-              <Text>タップしてぼやく</Text>
-            </Button>
+            <View className="items-center gap-1">
+              <Button
+                className="rounded-full"
+                disabled={isLoading || isLimitReached}
+                onPress={() => setChatVisible(true)}
+              >
+                <Icon as={MessageCircleMore} size={24} />
+                <Text>タップしてぼやく</Text>
+              </Button>
+              {isLimitReached && (
+                <Text className="text-sm text-destructive">本日のぼやきの上限に達しました</Text>
+              )}
+            </View>
+          </View>
+          <View className="h-30 flex-1">
+            <View className="mb-2 flex-row items-center gap-2">
+              <Text className="font-body-medium">今日のぼやき</Text>
+              <Text className="text-sm text-muted-foreground">{todayEntries.length}件</Text>
+            </View>
+            <ScrollView
+              className="flex-1"
+              contentContainerClassName="gap-2 pb-2"
+              showsVerticalScrollIndicator={false}
+            >
+              {todayEntries.map((entry) => (
+                <View
+                  key={entry.id}
+                  className="flex-row gap-3 rounded-2xl bg-card px-4 py-3 shadow-sm shadow-black/5"
+                >
+                  <Face level={entry.conditionLevel} size={40} />
+                  <View className="flex-1 gap-1 bg-transparent">
+                    <View className="flex-row items-center justify-between bg-transparent">
+                      <ConditionLabel level={entry.conditionLevel} />
+                      <Text className="text-xs text-muted-foreground">
+                        {format(new Date(entry.createdAt), 'HH:mm', { locale: ja })}
+                      </Text>
+                    </View>
+                    <View className="bg-transparent">
+                      <Text className="text-sm">{entry.summary}</Text>
+                    </View>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
           </View>
         </View>
       </SafeAreaView>
@@ -183,7 +240,7 @@ export default function HomeScreen() {
                 variant="default"
                 size="icon"
                 onPress={() => handleSend()}
-                disabled={isPendingEntry || isPendingReply}
+                disabled={isPendingEntry || isPendingReply || isLoading || isLimitReached}
                 className="rounded-full"
               >
                 <Icon as={Send} size={22} />
