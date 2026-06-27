@@ -27,11 +27,11 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Label>カレンダー</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="calendar" md="calendar_month" />
       </NativeTabs.Trigger>
-      {/* 未使用のため一時的に非表示。settings.tsx 自体は残す */}
-      {/* <NativeTabs.Trigger name="settings">
+
+      <NativeTabs.Trigger name="settings">
         <NativeTabs.Trigger.Label>設定</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="gearshape" md="settings" />
-      </NativeTabs.Trigger> */}
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
