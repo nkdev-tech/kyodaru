@@ -127,7 +127,7 @@ export default function CalendarTab() {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [selectedDay, setSelectedDay] = useState<number | null>(today.getDate());
   // 滑り込みアニメの向き（翌月=右から / 前月=左から）
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
 
@@ -186,8 +186,8 @@ export default function CalendarTab() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="mx-5 my-3 h-8 flex-row items-center justify-between">
+    <SafeAreaView className="mx-5 flex-1 bg-background">
+      <View className="my-3 h-8 flex-row items-center justify-between">
         <Text className="font-body-bold text-xl">カレンダー</Text>
         <View className="flex-row items-center justify-between">
           <Button
@@ -221,7 +221,7 @@ export default function CalendarTab() {
             key={`${year}-${month}`}
             entering={(direction === 'next' ? SlideInRight : SlideInLeft).duration(220)}
           >
-            <View className="mx-5 mb-2 mt-3 flex-row bg-transparent">
+            <View className="mb-2 flex-row bg-transparent">
               {WEEKDAYS.map((weekday) => (
                 <Text
                   key={weekday.label}
@@ -232,7 +232,7 @@ export default function CalendarTab() {
               ))}
             </View>
 
-            <View className="mx-5 flex-row flex-wrap overflow-hidden rounded-2xl bg-transparent">
+            <View className="flex-row flex-wrap overflow-hidden rounded-2xl bg-transparent">
               {cells.map((cell, i) => (
                 <DayCell
                   key={i}
@@ -250,10 +250,13 @@ export default function CalendarTab() {
         </View>
       </GestureDetector>
 
-      <View className="mx-5 mt-3 flex-1">
-        <Text className="py-2 font-body-medium">
-          {selectedDay && format(new Date(year, month, selectedDay), 'M月d日(E)', { locale: ja })}
-        </Text>
+      <View className="mt-3 flex-1">
+        <View className="flex-row items-center gap-3">
+          <Text className="py-2 font-body-medium">
+            {selectedDay && format(new Date(year, month, selectedDay), 'M月d日(E)', { locale: ja })}
+          </Text>
+          <Text className="text-sm text-muted-foreground">{details.length}件</Text>
+        </View>
         <ScrollView
           className="flex-1"
           contentContainerClassName="gap-2 pb-2"
@@ -266,7 +269,7 @@ export default function CalendarTab() {
             >
               <View className="flex-row items-center justify-between bg-transparent">
                 <View className="flex-row items-center gap-2 bg-transparent">
-                  <Face level={detail.conditionLevel} size={32} />
+                  <Face level={detail.conditionLevel} size={28} />
                   <ConditionLabel level={detail.conditionLevel} />
                 </View>
                 <View className="bg-transparent">
