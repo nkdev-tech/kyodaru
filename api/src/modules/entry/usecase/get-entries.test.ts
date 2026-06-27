@@ -54,13 +54,15 @@ describe('getEntries', () => {
     const userId = '1'
     const year = null
     const month = null
-    const res = await getEntries(userId, year, month)
+    const day = undefined
+    const res = await getEntries(userId, year, month, day)
     expect(res).toEqual(mockEntries)
     const nowDate = new Date('2026-01-10T00:00:00Z')
     expect(EntryRepository.findAll).toHaveBeenCalledWith(
       '1',
       nowDate.getUTCFullYear(),
       nowDate.getUTCMonth() + 1,
+      undefined,
     )
   })
 
@@ -104,8 +106,54 @@ describe('getEntries', () => {
     const userId = '1'
     const year = 2026
     const month = 1
-    const res = await getEntries(userId, year, month)
+    const day = undefined
+    const res = await getEntries(userId, year, month, day)
     expect(res).toEqual(mockEntries)
-    expect(EntryRepository.findAll).toHaveBeenCalledWith(userId, year, month)
+    expect(EntryRepository.findAll).toHaveBeenCalledWith(
+      userId,
+      year,
+      month,
+      undefined,
+    )
+  })
+
+  it('can get entries with year and month and day', async () => {
+    const mockEntries = [
+      {
+        id: '1',
+        userId: '1',
+        summary: 'だるい',
+        rawText: '今日もだるい',
+        conditionLevel: 4,
+        pressure: 1014.9,
+        temperature: 23.5,
+        weather: '快晴',
+        createdAt: new Date('2026-01-10T00:00:00.000Z'),
+      },
+      {
+        id: '2',
+        userId: '1',
+        summary: '頭痛い',
+        rawText: '頭痛い。ズキズキとこめかみが痛む。眩暈がする',
+        conditionLevel: 5,
+        pressure: 998.2,
+        temperature: 18.3,
+        weather: '雨',
+        createdAt: new Date('2026-01-10T00:00:00.000Z'),
+      },
+    ]
+    vi.mocked(EntryRepository.findAll).mockResolvedValue(mockEntries)
+    const userId = '1'
+    const year = 2026
+    const month = 1
+    const day = 10
+    const res = await getEntries(userId, year, month, day)
+    expect(res).toEqual(mockEntries)
+    expect(EntryRepository.findAll).toHaveBeenCalledWith(
+      userId,
+      year,
+      month,
+      day,
+    )
   })
 })
