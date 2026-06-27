@@ -56,7 +56,7 @@ export default function HomeScreen() {
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [chatVisible]);
+  }, [chatVisible, messages]);
 
   const handleSend = (text: string = draft) => {
     const trimmed = text.trim();
