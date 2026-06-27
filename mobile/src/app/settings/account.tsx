@@ -19,7 +19,7 @@ export default function AccountScreen() {
     <SafeAreaView className="mx-5 flex-1 bg-background">
       <View className="my-3 h-8 flex-row items-center gap-2">
         <Button variant="ghost" size="icon" onPress={() => router.back()} className="rounded-full">
-          <ChevronLeft size={18} />
+          <Icon as={ChevronLeft} size={18} className="text-muted-foreground" />
         </Button>
         <Text className="font-body-bold text-xl">アカウント設定</Text>
       </View>
