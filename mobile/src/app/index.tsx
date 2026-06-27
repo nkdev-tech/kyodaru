@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
+import { KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
 import { SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
+import { toast } from 'sonner-native';
 import {
   useGetApiEntries,
   usePostApiAi,
@@ -16,6 +17,7 @@ import { Logo } from '@/components/Logo';
 import { Mascot } from '@/components/Mascot';
 import { WeatherPanel } from '@/components/WeatherPanel';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Icon } from '@/components/ui/icon';
 import { Textarea } from '@/components/ui/textarea';
 import { Text } from '@/components/ui/text';
@@ -46,7 +48,7 @@ export default function HomeScreen() {
   const isLimitReached = todayEntries.length >= DAILY_ENTRY_LIMIT;
 
   useEffect(() => {
-    if (chatVisible) {
+    if (chatVisible && messages.length === 0) {
       // チャット画面が表示されてから少し遅らせて初期メッセージを出し、
       // AIが返答しているように見せる演出
       const timer = setTimeout(() => {
@@ -54,7 +56,7 @@ export default function HomeScreen() {
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [chatVisible]);
+  }, [chatVisible, messages]);
 
   const handleSend = (text: string = draft) => {
     const trimmed = text.trim();
@@ -76,7 +78,7 @@ export default function HomeScreen() {
       {
         onSuccess(result) {
           if (result.status !== 200) {
-            Alert.alert('エラー', '送信に失敗しました。もう一度お試しください。');
+            toast.error('送信に失敗しました。もう一度お試しください');
             return;
           }
           const replies = result.data.reply.split('\n\n').filter((t) => t.trim());
@@ -86,7 +88,7 @@ export default function HomeScreen() {
           ]);
         },
         onError() {
-          Alert.alert('エラー', '送信に失敗しました。もう一度お試しください。');
+          toast.error('送信に失敗しました。もう一度お試しください');
         },
       },
     );
@@ -94,11 +96,12 @@ export default function HomeScreen() {
 
   const handleClose = () => {
     if (isPendingEntry) return;
-    if (!messages.some((m) => m.role === 'user')) {
-      setChatVisible(false);
-      setMascotKey((k) => k + 1);
-      return;
-    }
+
+    setChatVisible(false);
+    setDraft('');
+    setMascotKey((k) => k + 1);
+
+    if (!messages.some((m) => m.role === 'user')) return;
 
     mutateEntry(
       {
@@ -114,17 +117,14 @@ export default function HomeScreen() {
       {
         onSuccess(result) {
           if (result.status !== 201) {
-            Alert.alert('エラー', '送信に失敗しました。もう一度お試しください。');
+            toast.error('送信に失敗しました。もう一度お試しください');
             return;
           }
           queryClient.invalidateQueries({ queryKey: getGetApiEntriesQueryKey() });
-          setChatVisible(false);
           setMessages([]);
-          setDraft('');
-          setMascotKey((k) => k + 1);
         },
         onError() {
-          Alert.alert('エラー', '送信に失敗しました。もう一度お試しください。');
+          toast.error('送信に失敗しました。もう一度お試しください');
         },
       },
     );
@@ -165,23 +165,22 @@ export default function HomeScreen() {
               showsVerticalScrollIndicator={false}
             >
               {todayEntries.map((entry) => (
-                <View
-                  key={entry.id}
-                  className="flex-row gap-3 rounded-2xl bg-card px-4 py-3 shadow-sm shadow-black/5"
-                >
-                  <Face level={entry.conditionLevel} size={40} />
-                  <View className="flex-1 gap-1 bg-transparent">
-                    <View className="flex-row items-center justify-between bg-transparent">
-                      <ConditionLabel level={entry.conditionLevel} />
-                      <Text className="text-xs text-muted-foreground">
-                        {format(new Date(entry.createdAt), 'HH:mm', { locale: ja })}
-                      </Text>
+                <Card key={entry.id}>
+                  <CardContent className="flex-row gap-3">
+                    <Face level={entry.conditionLevel} size={40} />
+                    <View className="flex-1 gap-1 bg-transparent">
+                      <View className="flex-row items-center justify-between bg-transparent">
+                        <ConditionLabel level={entry.conditionLevel} />
+                        <Text className="text-xs text-muted-foreground">
+                          {format(new Date(entry.createdAt), 'HH:mm', { locale: ja })}
+                        </Text>
+                      </View>
+                      <View className="bg-transparent">
+                        <Text className="text-sm">{entry.summary}</Text>
+                      </View>
                     </View>
-                    <View className="bg-transparent">
-                      <Text className="text-sm">{entry.summary}</Text>
-                    </View>
-                  </View>
-                </View>
+                  </CardContent>
+                </Card>
               ))}
             </ScrollView>
           </View>

@@ -14,6 +14,7 @@ import { ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { Alert, AppState, AppStateStatus, Linking, Platform, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Toaster } from 'sonner-native';
 import { useGetApiVersionCheck } from '@/external/api';
 import { weatherQueryOptions } from '@/hooks/use-weather';
 import { IOS_APP_STORE_ID } from '@/lib/config';
@@ -119,6 +120,7 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider value={colorScheme === 'dark' ? NAV_THEME.dark : NAV_THEME.light}>
           <AppContent />
+          <Toaster />
         </ThemeProvider>
         <PortalHost />
       </QueryClientProvider>
