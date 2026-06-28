@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
 import { SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
 import { useQueryClient } from '@tanstack/react-query';
+import * as SecureStore from 'expo-secure-store';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { toast } from 'sonner-native';
@@ -33,6 +34,7 @@ export default function HomeScreen() {
   const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([]);
   const [draft, setDraft] = useState('');
   const [inputKey, setInputKey] = useState(0);
+  const [welcomeMessage, setWelcomeMessage] = useState<string | null>();
   const weatherInfo = useWeather();
   const insets = initialWindowMetrics?.insets ?? { top: 0, bottom: 0, left: 0, right: 0 };
   const queryClient = useQueryClient();
@@ -46,6 +48,17 @@ export default function HomeScreen() {
   const { mutate: mutateReply, isPending: isPendingReply } = usePostApiAi();
   const todayEntries = data?.status === 200 ? data?.data : [];
   const isLimitReached = todayEntries.length >= DAILY_ENTRY_LIMIT;
+
+  useEffect(() => {
+    SecureStore.getItemAsync('hasSeenWelcome').then((value) => {
+      if (value) {
+        setWelcomeMessage(null);
+        return;
+      }
+      setWelcomeMessage('はじめまして、だるくもです\n下のボタンから体調が記録できます');
+      SecureStore.setItemAsync('hasSeenWelcome', 'true');
+    });
+  }, []);
 
   useEffect(() => {
     if (chatVisible && messages.length === 0) {
@@ -139,7 +152,7 @@ export default function HomeScreen() {
           </View>
           <WeatherPanel weatherInfo={weatherInfo} today={today} />
           <View className="my-24 flex-1 items-center justify-center gap-8 bg-transparent">
-            <Mascot key={mascotKey} />
+            {welcomeMessage !== undefined && <Mascot key={mascotKey} message={welcomeMessage} />}
             <View className="items-center gap-1">
               <Button
                 size="lg"
