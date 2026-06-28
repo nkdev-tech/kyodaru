@@ -21,6 +21,10 @@ export const auth = betterAuth({
         ]
       : []),
   ],
+  session: {
+    expiresIn: 60 * 60 * 24 * 400, // 400日（秒）
+    updateAge: 60 * 60 * 24, // 1日（秒）
+  },
   plugins: [anonymous(), expo()],
 })
 
