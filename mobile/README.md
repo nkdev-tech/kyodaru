@@ -1,56 +1,43 @@
-# Welcome to your Expo app 👋
+# mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo / React Native によるモバイルアプリ。
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## ローカル開発
 
 ```bash
-npm run reset-project
+npm run start     # Expo 開発サーバー起動
+npm run ios       # iOS シミュレーター
+npm run android   # Android エミュレーター
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+API のURLは `EXPO_PUBLIC_API_URL` で指定する（ローカルは `.env` に記載）。
 
-### Other setup steps
+## ビルド（EAS）
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+ビルドプロファイルは `eas.json` で定義。`EXPO_PUBLIC_API_URL` はビルド時にバンドルへ焼き込まれるため、各プロファイルの `env` で指定している。
 
-## Learn more
+| プロファイル | 用途 | API URL |
+|---|---|---|
+| development | dev client（実機/シミュレータ開発） | `http://localhost:8787` |
+| preview | 内部配布（リリース確認） | `https://api.kyodaru.com` |
+| production | ストア / TestFlight 提出 | `https://api.kyodaru.com` |
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+# iOS ビルド（プロファイル省略時は production）
+npx eas-cli build --platform ios
+npx eas-cli build --platform ios --profile preview
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+ビルド番号は `appVersionSource: "remote"` + `production.autoIncrement` で EAS が自動採番する。
 
-## Join the community
+## TestFlight へ提出
 
-Join our community of developers creating universal apps.
+```bash
+npx eas-cli submit --platform ios
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+提出には App Store Connect API Key を使用（EAS が生成・保管）。輸出コンプライアンスは `app.json` の `ITSAppUsesNonExemptEncryption: false` で設定済み。
+
+## モノレポでのビルド注意
+
+EAS はモノレポルートで `npm ci` を実行するため、放置すると `api` ワークスペースの依存（`miniflare` 経由の `sharp` 等）まで入りビルドが失敗する。リポジトリルートの `.easignore` で `api/` を除外して回避している。

@@ -1,0 +1,50 @@
+# ===== .gitignore（ルート + mobile + api）の内容を踏襲 =====
+# .easignore は .gitignore を「置き換える」ため、必要な除外を全部ここに書く
+
+# dependencies
+node_modules/
+
+# env / secrets
+.env
+.env.local
+.env*.local
+.dev.vars
+*.pem
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Cloudflare Workers
+.wrangler/
+
+# Expo / React Native
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+ios/
+android/
+.kotlin/
+*.orig.*
+.metro-health-check*
+
+# debug logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# typescript
+*.tsbuildinfo
+
+# macOS
+.DS_Store
+
+# misc
+ui_kits/
+.claude/
+example
+
+# ===== EAS用: mobileビルドに不要な api ワークスペースを除外（今回の修正の本体） =====
+api/
