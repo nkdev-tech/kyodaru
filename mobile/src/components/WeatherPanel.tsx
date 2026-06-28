@@ -2,6 +2,8 @@ import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
 import { Separator } from '@/components/ui/separator';
+import { useColorScheme } from 'react-native';
+import { THEME } from '@/lib/theme';
 import { getWeatherIcon } from '@/lib/weather-icon';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
@@ -21,9 +23,12 @@ type Props = {
 };
 
 export function WeatherPanel({ weatherInfo, today }: Props) {
+  const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
+  const theme = THEME[scheme];
+
   return (
     <LinearGradient
-      colors={['#D2E9F2', '#FFFFFF']}
+      colors={[theme.accent, theme.card]}
       className="flex-row self-stretch rounded-2xl px-4 py-3 shadow-sm shadow-black/5"
     >
       <View className="flex-1 flex-row items-center gap-4 bg-transparent px-2">

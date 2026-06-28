@@ -148,7 +148,7 @@ export default function HomeScreen() {
                 onPress={() => setChatVisible(true)}
               >
                 <Icon as={MessageCircleMore} size={24} />
-                <Text className="text-lg font-body-bold">タップしてぼやく</Text>
+                <Text className="font-body-bold text-lg">タップしてぼやく</Text>
               </Button>
               {isLimitReached && (
                 <Text className="text-sm text-destructive">本日のぼやきの上限に達しました</Text>
