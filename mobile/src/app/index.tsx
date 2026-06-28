@@ -117,10 +117,12 @@ export default function HomeScreen() {
 
     if (!messages.some((m) => m.role === 'user')) return;
 
+    const answeredMessages = messages.at(-1)?.role === 'model' ? messages.slice(0, -1) : messages;
+
     mutateEntry(
       {
         data: {
-          rawText: messages
+          rawText: answeredMessages
             .map((m) => `${m.role === 'model' ? 'AI' : 'ユーザー'}: ${m.text}`)
             .join('\n\n---\n\n'),
           pressure: weatherInfo.pressure,
@@ -152,9 +154,9 @@ export default function HomeScreen() {
             <Logo />
           </View>
           <WeatherPanel weatherInfo={weatherInfo} today={today} />
-          <View className="my-24 flex-1 items-center justify-center gap-8 bg-transparent">
+          <View className="mb-20 mt-24 flex-1 items-center justify-center gap-8 bg-transparent">
             {welcomeMessage !== undefined && <Mascot key={mascotKey} message={welcomeMessage} />}
-            <View className="items-center gap-1">
+            <View className="items-center gap-2">
               <Button
                 size="lg"
                 className="rounded-full"
@@ -164,9 +166,9 @@ export default function HomeScreen() {
                 <Icon as={MessageCircleMore} size={24} />
                 <Text className="font-body-bold text-lg">タップしてぼやく</Text>
               </Button>
-              {isLimitReached && (
-                <Text className="text-sm text-destructive">本日のぼやきの上限に達しました</Text>
-              )}
+              <Text className="text-sm text-muted-foreground">
+                本日のぼやき {todayEntries.length}/{DAILY_ENTRY_LIMIT}回
+              </Text>
             </View>
           </View>
           <View className="h-30 flex-1">
