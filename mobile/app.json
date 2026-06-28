@@ -10,7 +10,8 @@
     "ios": {
       "bundleIdentifier": "com.nkdevtech.kyodaru",
       "infoPlist": {
-        "CFBundleDisplayName": "今日だる"
+        "CFBundleDisplayName": "今日だる",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -54,7 +55,8 @@
         {
           "label": "今日だる"
         }
-      ]
+      ],
+      "expo-image"
     ],
     "experiments": {
       "typedRoutes": true,

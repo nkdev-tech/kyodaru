@@ -10,7 +10,7 @@ npm run dev       # wrangler dev
 
 ## 本番デプロイ
 
-Worker名は `kyodaru-api`。本番URLは `https://kyodaru-api.nkdev-tech.workers.dev`。
+Worker名は `kyodaru-api`。本番URLは `https://api.kyodaru.com`。
 
 ```bash
 # 本番D1へマイグレーション適用
