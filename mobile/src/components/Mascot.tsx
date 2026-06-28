@@ -66,12 +66,14 @@ const EXPRESSIONS: Record<MascotExpression, ExpressionData> = {
   },
 };
 
-export function Mascot() {
+export function Mascot({ message: overrideMessage }: { message?: string | null }) {
   const translateY = useSharedValue(0);
   const [expression] = useState<MascotExpression>(
     () => ALL_EXPRESSIONS[Math.floor(Math.random() * ALL_EXPRESSIONS.length)],
   );
-  const [message] = useState(() => MESSAGES[Math.floor(Math.random() * MESSAGES.length)]);
+  const [message] = useState(
+    () => overrideMessage ?? MESSAGES[Math.floor(Math.random() * MESSAGES.length)],
+  );
   const expr = EXPRESSIONS[expression];
   const isDark = useColorScheme() === 'dark';
   const cardColor = isDark ? THEME.dark.card : THEME.light.card;
@@ -91,7 +93,7 @@ export function Mascot() {
   return (
     <View className="items-center">
       <View className="rounded-full bg-card px-6 py-4">
-        <Text className="text-sm text-card-foreground">{message}</Text>
+        <Text className="text-center text-sm text-card-foreground">{message}</Text>
       </View>
       <View
         style={{

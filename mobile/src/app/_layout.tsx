@@ -35,6 +35,13 @@ export function AppContent() {
     MPLUSRounded1c_700Bold,
   });
   const [sessionReady, setSessionReady] = useState(false);
+  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setMinTimeElapsed(true), 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
   const { data, isLoading: isVersionLoading } = useGetApiVersionCheck({
     query: { retry: 1 },
   });
@@ -102,7 +109,8 @@ export function AppContent() {
     sessionReady &&
     !isVersionLoading &&
     data?.status !== 426 &&
-    !isWeatherLoading;
+    !isWeatherLoading &&
+    minTimeElapsed;
 
   return (
     <>

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
 import { SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
 import { useQueryClient } from '@tanstack/react-query';
+import * as SecureStore from 'expo-secure-store';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { toast } from 'sonner-native';
@@ -33,6 +34,7 @@ export default function HomeScreen() {
   const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([]);
   const [draft, setDraft] = useState('');
   const [inputKey, setInputKey] = useState(0);
+  const [welcomeMessage, setWelcomeMessage] = useState<string | null>();
   const weatherInfo = useWeather();
   const insets = initialWindowMetrics?.insets ?? { top: 0, bottom: 0, left: 0, right: 0 };
   const queryClient = useQueryClient();
@@ -46,6 +48,17 @@ export default function HomeScreen() {
   const { mutate: mutateReply, isPending: isPendingReply } = usePostApiAi();
   const todayEntries = data?.status === 200 ? data?.data : [];
   const isLimitReached = todayEntries.length >= DAILY_ENTRY_LIMIT;
+
+  useEffect(() => {
+    SecureStore.getItemAsync('hasSeenWelcome').then((value) => {
+      if (value) {
+        setWelcomeMessage(null);
+        return;
+      }
+      setWelcomeMessage('はじめまして、だるくもです\n下のボタンから体調が記録できます');
+      SecureStore.setItemAsync('hasSeenWelcome', 'true');
+    });
+  }, []);
 
   useEffect(() => {
     if (chatVisible && messages.length === 0) {
@@ -99,14 +112,17 @@ export default function HomeScreen() {
 
     setChatVisible(false);
     setDraft('');
+    setWelcomeMessage(null);
     setMascotKey((k) => k + 1);
 
     if (!messages.some((m) => m.role === 'user')) return;
 
+    const answeredMessages = messages.at(-1)?.role === 'model' ? messages.slice(0, -1) : messages;
+
     mutateEntry(
       {
         data: {
-          rawText: messages
+          rawText: answeredMessages
             .map((m) => `${m.role === 'model' ? 'AI' : 'ユーザー'}: ${m.text}`)
             .join('\n\n---\n\n'),
           pressure: weatherInfo.pressure,
@@ -138,20 +154,21 @@ export default function HomeScreen() {
             <Logo />
           </View>
           <WeatherPanel weatherInfo={weatherInfo} today={today} />
-          <View className="my-20 flex-1 items-center justify-center gap-4 bg-transparent">
-            <Mascot key={mascotKey} />
-            <View className="items-center gap-1">
+          <View className="mb-20 mt-24 flex-1 items-center justify-center gap-8 bg-transparent">
+            {welcomeMessage !== undefined && <Mascot key={mascotKey} message={welcomeMessage} />}
+            <View className="items-center gap-2">
               <Button
+                size="lg"
                 className="rounded-full"
                 disabled={isLoading || isLimitReached}
                 onPress={() => setChatVisible(true)}
               >
                 <Icon as={MessageCircleMore} size={24} />
-                <Text>タップしてぼやく</Text>
+                <Text className="font-body-bold text-lg">タップしてぼやく</Text>
               </Button>
-              {isLimitReached && (
-                <Text className="text-sm text-destructive">本日のぼやきの上限に達しました</Text>
-              )}
+              <Text className="text-sm text-muted-foreground">
+                本日のぼやき {todayEntries.length}/{DAILY_ENTRY_LIMIT}回
+              </Text>
             </View>
           </View>
           <View className="h-30 flex-1">
@@ -182,6 +199,11 @@ export default function HomeScreen() {
                   </CardContent>
                 </Card>
               ))}
+              {isPendingEntry && (
+                <View className="flex-1 items-center justify-center py-2">
+                  <ActivityIndicator size="large" />
+                </View>
+              )}
             </ScrollView>
           </View>
         </View>
