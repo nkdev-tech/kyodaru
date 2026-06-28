@@ -138,16 +138,17 @@ export default function HomeScreen() {
             <Logo />
           </View>
           <WeatherPanel weatherInfo={weatherInfo} today={today} />
-          <View className="my-20 flex-1 items-center justify-center gap-4 bg-transparent">
+          <View className="my-24 flex-1 items-center justify-center gap-8 bg-transparent">
             <Mascot key={mascotKey} />
             <View className="items-center gap-1">
               <Button
+                size="lg"
                 className="rounded-full"
                 disabled={isLoading || isLimitReached}
                 onPress={() => setChatVisible(true)}
               >
                 <Icon as={MessageCircleMore} size={24} />
-                <Text>タップしてぼやく</Text>
+                <Text className="text-lg font-body-bold">タップしてぼやく</Text>
               </Button>
               {isLimitReached && (
                 <Text className="text-sm text-destructive">本日のぼやきの上限に達しました</Text>
