@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
 import { SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
 import { useQueryClient } from '@tanstack/react-query';
 import * as SecureStore from 'expo-secure-store';
@@ -112,6 +112,7 @@ export default function HomeScreen() {
 
     setChatVisible(false);
     setDraft('');
+    setWelcomeMessage(null);
     setMascotKey((k) => k + 1);
 
     if (!messages.some((m) => m.role === 'user')) return;
@@ -196,6 +197,11 @@ export default function HomeScreen() {
                   </CardContent>
                 </Card>
               ))}
+              {isPendingEntry && (
+                <View className="flex-1 items-center justify-center py-2">
+                  <ActivityIndicator size="large" />
+                </View>
+              )}
             </ScrollView>
           </View>
         </View>
