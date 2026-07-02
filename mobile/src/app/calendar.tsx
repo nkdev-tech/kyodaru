@@ -162,9 +162,12 @@ export default function CalendarTab() {
     if (nextSerial < MIN_MONTH_SERIAL || nextSerial > maxMonthSerial) return;
     setDirection(delta > 0 ? 'next' : 'prev');
     const next = new Date(year, month + delta, 1);
-    setYear(next.getFullYear());
-    setMonth(next.getMonth());
-    setSelectedDay(null);
+    const nextYear = next.getFullYear();
+    const nextMonth = next.getMonth();
+    const daysInNextMonth = new Date(nextYear, nextMonth + 1, 0).getDate();
+    setYear(nextYear);
+    setMonth(nextMonth);
+    setSelectedDay((prev) => Math.min(prev ?? 1, daysInNextMonth));
   };
 
   const isToday = (cell: Cell) =>
