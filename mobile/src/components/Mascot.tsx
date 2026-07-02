@@ -35,7 +35,7 @@ const CLOUD_BODY =
   'M52 104 C40 104 35 95 38 85 C35 73 46 65 58 68 C61 55 80 50 92 58 C102 50 120 53 125 67 C141 65 152 77 147 91 C155 98 151 110 138 112 C133 117 60 117 52 104 Z';
 const HIGHLIGHT = 'M62 70 C70 60 84 56 96 62 C84 62 72 68 66 76 C63 80 60 75 62 70 Z';
 
-const ALL_EXPRESSIONS: MascotExpression[] = ['default', 'smile', 'shonbori', 'sleep'];
+const DISPLAY_EXPRESSIONS: MascotExpression[] = ['default', 'smile', 'sleep'];
 
 const EXPRESSIONS: Record<MascotExpression, ExpressionData> = {
   default: {
@@ -69,7 +69,7 @@ const EXPRESSIONS: Record<MascotExpression, ExpressionData> = {
 export function Mascot({ message: overrideMessage }: { message?: string | null }) {
   const translateY = useSharedValue(0);
   const [expression] = useState<MascotExpression>(
-    () => ALL_EXPRESSIONS[Math.floor(Math.random() * ALL_EXPRESSIONS.length)],
+    () => DISPLAY_EXPRESSIONS[Math.floor(Math.random() * DISPLAY_EXPRESSIONS.length)],
   );
   const [message] = useState(
     () => overrideMessage ?? MESSAGES[Math.floor(Math.random() * MESSAGES.length)],
