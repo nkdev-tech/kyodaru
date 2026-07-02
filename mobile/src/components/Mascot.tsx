@@ -109,7 +109,7 @@ export function Mascot({ message: overrideMessage }: { message?: string | null }
         }}
       />
       <Animated.View style={[animatedStyle, { marginTop: 24 }]}>
-        <Svg width={200} height={117} viewBox="24 46 130 76" accessibilityLabel="だるくも">
+        <Svg width={191} height={112} viewBox="34 46 124 73" accessibilityLabel="だるくも">
           <Path d={CLOUD_BODY} fill="#BFD2E6" />
           <Path d={HIGHLIGHT} fill="#FFFFFF" opacity={0.5} />
           <Ellipse cx={70} cy={expr.cheekCy} rx={8.5} ry={5} fill="#8FB0D6" opacity={0.4} />
