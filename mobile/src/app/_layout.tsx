@@ -38,7 +38,7 @@ export function AppContent() {
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setMinTimeElapsed(true), 1200);
+    const timer = setTimeout(() => setMinTimeElapsed(true), 1500);
     return () => clearTimeout(timer);
   }, []);
 

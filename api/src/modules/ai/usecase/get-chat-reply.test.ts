@@ -20,7 +20,7 @@ describe('getChatReply', () => {
     const weather = '小雨'
     const result = await getChatReply('dummy-key', {
       messages: [
-        { role: 'model', text: '今日の体調はいかがですか？' },
+        { role: 'model', text: '今の調子はどうですか？' },
         { role: 'user', text: '頭が痛い' },
       ],
       pressure,
@@ -51,7 +51,7 @@ describe('getChatReply', () => {
     const weather = null
     const result = await getChatReply('dummy-key', {
       messages: [
-        { role: 'model', text: '今日の体調はいかがですか？' },
+        { role: 'model', text: '今の調子はどうですか？' },
         { role: 'user', text: '頭が痛い' },
       ],
       pressure,

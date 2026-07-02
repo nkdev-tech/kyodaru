@@ -20,11 +20,12 @@ import { WeatherPanel } from '@/components/WeatherPanel';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Icon } from '@/components/ui/icon';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
 import { useWeather } from '@/hooks/use-weather';
-import { MessageCircleMore, Send, X } from 'lucide-react-native';
+import { CircleQuestionMark, MessageCircleMore, Send, X } from 'lucide-react-native';
 import { DAILY_ENTRY_LIMIT } from '@/lib/config';
 
 export default function HomeScreen() {
@@ -65,7 +66,7 @@ export default function HomeScreen() {
       // チャット画面が表示されてから少し遅らせて初期メッセージを出し、
       // AIが返答しているように見せる演出
       const timer = setTimeout(() => {
-        setMessages([{ role: 'model', text: '今日の体調はいかがですか？' }]);
+        setMessages([{ role: 'model', text: '今の調子はどうですか？' }]);
       }, 500);
       return () => clearTimeout(timer);
     }
@@ -154,9 +155,12 @@ export default function HomeScreen() {
             <Logo />
           </View>
           <WeatherPanel weatherInfo={weatherInfo} today={today} />
-          <View className="mb-20 mt-24 flex-1 items-center justify-center gap-8 bg-transparent">
+          <View className="mb-24 mt-36 flex-1 items-center justify-center gap-2 bg-transparent">
             {welcomeMessage !== undefined && <Mascot key={mascotKey} message={welcomeMessage} />}
             <View className="items-center gap-2">
+              <Text className="text-sm text-destructive">
+                {isLimitReached ? '本日の上限に達しました' : ''}
+              </Text>
               <Button
                 size="lg"
                 className="rounded-full"
@@ -166,14 +170,24 @@ export default function HomeScreen() {
                 <Icon as={MessageCircleMore} size={24} />
                 <Text className="font-body-bold text-lg">タップしてぼやく</Text>
               </Button>
-              <Text className="text-sm text-muted-foreground">
-                本日のぼやき {todayEntries.length}/{DAILY_ENTRY_LIMIT}回
-              </Text>
+              <View className="flex-row items-center gap-1">
+                <Text className="text-sm text-muted-foreground">
+                  残り {DAILY_ENTRY_LIMIT - todayEntries.length} / {DAILY_ENTRY_LIMIT}回
+                </Text>
+                <Popover>
+                  <PopoverTrigger>
+                    <Icon as={CircleQuestionMark} size={16} className="text-muted-foreground" />
+                  </PopoverTrigger>
+                  <PopoverContent side="top" className="w-auto max-w-xs">
+                    <Text className="text-sm">日付が変わるとリセットされます</Text>
+                  </PopoverContent>
+                </Popover>
+              </View>
             </View>
           </View>
           <View className="h-30 flex-1">
             <View className="mb-2 flex-row items-center gap-2">
-              <Text className="font-body-medium">今日のぼやき</Text>
+              <Text className="font-body-medium">今日の記録</Text>
               <Text className="text-sm text-muted-foreground">{todayEntries.length}件</Text>
             </View>
             <ScrollView
