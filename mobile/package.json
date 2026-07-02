@@ -9,6 +9,7 @@
     "@expo/ui": "~56.0.18",
     "@react-navigation/native": "^7.0.0",
     "@rn-primitives/avatar": "^1.4.0",
+    "@rn-primitives/popover": "^1.5.1",
     "@rn-primitives/portal": "~1.4.0",
     "@rn-primitives/separator": "^1.4.0",
     "@rn-primitives/slot": "^1.4.0",
