@@ -117,7 +117,7 @@ function DayCell({
       </View>
       {info && (
         <View className="items-center bg-transparent">
-          <Face level={info.level} size={20} />
+          <Face level={info.level} size={22} />
         </View>
       )}
     </Pressable>
