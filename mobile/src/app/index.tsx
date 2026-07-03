@@ -155,7 +155,7 @@ export default function HomeScreen() {
             <Logo />
           </View>
           <WeatherPanel weatherInfo={weatherInfo} today={today} />
-          <View className="mb-24 mt-36 flex-1 items-center justify-center gap-2 bg-transparent">
+          <View className="mb-20 mt-28 flex-1 items-center justify-center gap-2 bg-transparent">
             {welcomeMessage !== undefined && <Mascot key={mascotKey} message={welcomeMessage} />}
             <View className="items-center gap-2">
               <Text className="text-sm text-destructive">
@@ -171,11 +171,13 @@ export default function HomeScreen() {
                 <Text className="font-body-bold text-lg">タップしてぼやく</Text>
               </Button>
               <View className="flex-row items-center gap-1">
+                <Text className="text-sm text-muted-foreground">残り</Text>
                 <Text className="text-sm text-muted-foreground">
-                  残り {DAILY_ENTRY_LIMIT - todayEntries.length} / {DAILY_ENTRY_LIMIT}回
+                  {DAILY_ENTRY_LIMIT - todayEntries.length} / {DAILY_ENTRY_LIMIT}
                 </Text>
+                <Text className="text-sm text-muted-foreground">回</Text>
                 <Popover>
-                  <PopoverTrigger>
+                  <PopoverTrigger hitSlop={{ top: 8, bottom: 16, left: 16, right: 16 }}>
                     <Icon as={CircleQuestionMark} size={16} className="text-muted-foreground" />
                   </PopoverTrigger>
                   <PopoverContent side="top" className="w-auto max-w-xs">
