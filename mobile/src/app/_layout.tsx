@@ -38,7 +38,7 @@ export function AppContent() {
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setMinTimeElapsed(true), 1500);
+    const timer = setTimeout(() => setMinTimeElapsed(true), 1200);
     return () => clearTimeout(timer);
   }, []);
 
@@ -102,7 +102,7 @@ export function AppContent() {
     };
   }, []);
 
-  if ((!fontsLoaded && !fontError) || !sessionReady || isVersionLoading) return null;
+  if ((!fontsLoaded && !fontError) || !sessionReady) return null;
 
   const ready =
     (fontsLoaded || fontError) &&
