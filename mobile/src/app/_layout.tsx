@@ -1,6 +1,6 @@
 import '../global.css';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { focusManager, QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import {
   MPLUSRounded1c_400Regular,
@@ -12,18 +12,28 @@ import { PortalHost } from '@rn-primitives/portal';
 import { useFonts } from 'expo-font';
 import { ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { Alert, AppState, AppStateStatus, Linking, Platform, useColorScheme } from 'react-native';
+import {
+  Alert,
+  AppState,
+  AppStateStatus,
+  Linking,
+  Platform,
+  useColorScheme,
+  View,
+} from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Toaster } from 'sonner-native';
 import { useGetApiVersionCheck } from '@/external/api';
 import { weatherQueryOptions } from '@/hooks/use-weather';
 import { IOS_APP_STORE_ID } from '@/lib/config';
 import { NAV_THEME } from '@/lib/theme';
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
 import { authClient } from '@/lib/auth-client';
 
+// ネイティブスプラッシュ（mascot on #4FA3C7）を、アプリが完全に準備できるまで出したままにする。
+// fade で消すことで、JS 側オーバーレイを持たずに白ギャップ・色の受け渡しを無くす。
 SplashScreen.preventAutoHideAsync();
+SplashScreen.setOptions({ fade: true, duration: 400 });
 
 const queryClient = new QueryClient();
 
@@ -37,6 +47,7 @@ export function AppContent() {
   const [sessionReady, setSessionReady] = useState(false);
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
 
+  // スプラッシュが一瞬で消えないよう、最低表示時間を確保する。
   useEffect(() => {
     const timer = setTimeout(() => setMinTimeElapsed(true), 1200);
     return () => clearTimeout(timer);
@@ -61,14 +72,6 @@ export function AppContent() {
       }
     })();
   }, []);
-
-  useEffect(() => {
-    if ((fontsLoaded || fontError) && sessionReady) {
-      (async () => {
-        await SplashScreen.hideAsync();
-      })();
-    }
-  }, [fontsLoaded, fontError, sessionReady]);
 
   useEffect(() => {
     if (data?.status === 426) {
@@ -102,8 +105,8 @@ export function AppContent() {
     };
   }, []);
 
-  if ((!fontsLoaded && !fontError) || !sessionReady) return null;
-
+  // フォント・セッション・バージョン確認・天気・最低表示時間がすべて揃うまで待つ。
+  // 426（強制アップデート）のときは ready にならず、スプラッシュを出したまま Alert を見せる。
   const ready =
     (fontsLoaded || fontError) &&
     sessionReady &&
@@ -112,11 +115,20 @@ export function AppContent() {
     !isWeatherLoading &&
     minTimeElapsed;
 
+  // AppTabs が実際にレイアウトされてからネイティブスプラッシュを消す（白フラッシュ回避）。
+  const onLayoutRootView = useCallback(async () => {
+    if (ready) {
+      await SplashScreen.hideAsync();
+    }
+  }, [ready]);
+
+  // ready になるまでは何も描かない。その間はネイティブスプラッシュが画面を覆う。
+  if (!ready) return null;
+
   return (
-    <>
-      <AnimatedSplashOverlay ready={ready ?? false} />
-      {ready && <AppTabs />}
-    </>
+    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      <AppTabs />
+    </View>
   );
 }
 
