@@ -82,7 +82,7 @@ export function AppContent() {
             onPress: () => {
               const url =
                 Platform.OS === 'ios'
-                  ? `itms-apps://itunes.apple.com/app/${IOS_APP_STORE_ID}`
+                  ? `itms-apps://itunes.apple.com/app/id${IOS_APP_STORE_ID}`
                   : 'market://details?id=com.nkdevtech.kyodaru';
               Linking.openURL(url);
             },

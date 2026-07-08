@@ -12,7 +12,7 @@ export const auth = betterAuth({
   secret: env.BETTER_AUTH_SECRET as string,
   baseURL: env.BETTER_AUTH_URL as string,
   trustedOrigins: [
-    'mobile://', // TODO: リリース前要確認
+    'mobile://',
     ...(process.env.NODE_ENV === 'development'
       ? [
           'exp://', // Trust all Expo URLs (prefix matching)
