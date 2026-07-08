@@ -1,7 +1,7 @@
 import '../global.css';
 
 import { useCallback, useEffect, useState } from 'react';
-import { focusManager, QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+import { focusManager, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   MPLUSRounded1c_400Regular,
   MPLUSRounded1c_500Medium,
@@ -24,7 +24,6 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Toaster } from 'sonner-native';
 import { useGetApiVersionCheck } from '@/external/api';
-import { weatherQueryOptions } from '@/hooks/use-weather';
 import { IOS_APP_STORE_ID } from '@/lib/config';
 import { NAV_THEME } from '@/lib/theme';
 import AppTabs from '@/components/app-tabs';
@@ -56,7 +55,6 @@ export function AppContent() {
   const { data, isLoading: isVersionLoading } = useGetApiVersionCheck({
     query: { retry: 1 },
   });
-  const { isLoading: isWeatherLoading } = useQuery(weatherQueryOptions);
 
   useEffect(() => {
     (async () => {
@@ -112,15 +110,16 @@ export function AppContent() {
     sessionReady &&
     !isVersionLoading &&
     data?.status !== 426 &&
-    !isWeatherLoading &&
     minTimeElapsed;
 
   // AppTabs が実際にレイアウトされてからネイティブスプラッシュを消す（白フラッシュ回避）。
   const onLayoutRootView = useCallback(async () => {
-    if (ready) {
+    try {
       await SplashScreen.hideAsync();
+    } catch (e) {
+      console.error(e);
     }
-  }, [ready]);
+  }, []);
 
   // ready になるまでは何も描かない。その間はネイティブスプラッシュが画面を覆う。
   if (!ready) return null;
