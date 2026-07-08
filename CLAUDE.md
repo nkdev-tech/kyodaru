@@ -51,6 +51,32 @@ npm workspaces でモノレポ管理。
 - **mobile はAPIレスポンスを strict 検証しない**（orval生成のTS型に`as`するだけ、tolerant reader）。後方互換を保つための意図的な設計であり、今後もstrictな実行時検証（zodでのレスポンスパース等）を追加しない
 - 上記は CI で機械的に検知する（orvalクライアントのドリフト検知、OpenAPI破壊的変更検知）
 
+## リリース運用（CD）
+
+**main へのマージが唯一の本番リリース点**。api と mobile を同じ main コミットから同時にトリガーすることで、片方だけ古い「バージョンずれ」を構造的に作れないようにする。
+
+```
+日々の修正ブランチ ──PR──▶ release/<version> ──PR──▶ main ──▶ [CD発火]
+```
+
+- **リリースブランチを切る** — `release/<version>`（例：`release/1.0.0`）。`<version>` は `api/package.json` の version
+- **日々の修正PRは release ブランチに向ける** — CI（api/mobile/orval-drift 等）と oasdiff（破壊的変更検知）は `release/**` でも走る
+- **まとまったら release → main にPRを出してマージ** — main への push で [ci.yml](.github/workflows/ci.yml) の CD ジョブが発火する
+  - CIジョブ（api/mobile/icon-wrapping/orval-drift）が全て通った場合のみ実行（`needs` ＋ `if: push かつ main` でゲート）
+  - `deploy-api`: `wrangler deploy`（数十秒）→ API 先行で反映
+  - `deploy-mobile`: `eas build -p ios --profile production --auto-submit`（Apple審査を挟むので自然に API より遅い）→ TestFlight 提出
+- **順序保証** — API デプロイは wrangler で数十秒、mobile は EAS ビルド＋Apple審査で時間がかかるため、自然に「API が先、mobile が後」になり mobile が古い API を叩く事故を防ぐ
+- **採番** — mobile は `appVersionSource: remote` ＋ production の `autoIncrement: true` で自動採番
+
+### 必要な GitHub Secrets
+
+| Secret | 用途 |
+|---|---|
+| `CLOUDFLARE_API_TOKEN` | `wrangler deploy`（Workers デプロイ権限を持つトークン） |
+| `EXPO_TOKEN` | EAS CLI 認証（Expo アカウントの access token） |
+
+※ App Store Connect の提出用認証（ASC API キー・配布証明書・プロビジョニングプロファイル）は **EAS 側の credentials に保管**する（`eas credentials -p ios` を一度実行）。GitHub Secrets には置かない。非対話ビルド前提のため、初回に credentials を EAS に登録しておく必要がある。
+
 ## issueの進め方（アシスタントが主導）
 
 1. **完了条件を決める** — ユーザーと合意する（このステップでは superpowers スキルを使わない）。設定系issueは「何を設定するか」＋「動作確認方法（あれば）」、機能issueはUI観点（例：〇〇画面で〇〇できる）で定める
