@@ -49,7 +49,7 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "位置情報の使用を許可しますか"
+          "locationWhenInUsePermission": "現在地の気圧・天気を自動取得し、体調の記録と分析に役立てるために位置情報を使用します"
         }
       ],
       [
