@@ -10,6 +10,9 @@ dist/
 ios/
 android/
 
+# macOS
+.DS_Store
+
 # env
 .env
 .env.local
