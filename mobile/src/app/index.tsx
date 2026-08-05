@@ -155,12 +155,12 @@ export default function HomeScreen() {
             <Logo />
           </View>
           <WeatherPanel weatherInfo={weatherInfo} today={today} />
-          <View className="mb-20 mt-28 flex-1 items-center justify-center gap-2 bg-transparent">
+          <View className="shrink-0 grow items-center justify-center gap-3 bg-transparent">
             {welcomeMessage !== undefined && <Mascot key={mascotKey} message={welcomeMessage} />}
             <View className="items-center gap-2">
-              <Text className="text-sm text-destructive">
-                {isLimitReached ? '本日の上限に達しました' : ''}
-              </Text>
+              {isLimitReached && (
+                <Text className="text-sm text-destructive">本日の上限に達しました</Text>
+              )}
               <Button
                 size="lg"
                 className="rounded-full"
@@ -187,7 +187,7 @@ export default function HomeScreen() {
               </View>
             </View>
           </View>
-          <View className="h-30 flex-1">
+          <View className="flex-[3]">
             <View className="mb-2 flex-row items-center gap-2">
               <Text className="font-body-medium">今日の記録</Text>
               <Text className="text-sm text-muted-foreground">{todayEntries.length}件</Text>
