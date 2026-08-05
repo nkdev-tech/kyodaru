@@ -92,7 +92,7 @@ export function Mascot({ message: overrideMessage }: { message?: string | null }
 
   return (
     <View className="items-center">
-      <View className="rounded-full bg-card px-6 py-4">
+      <View className="rounded-full bg-card px-6 py-3">
         <Text className="text-center text-sm text-card-foreground">{message}</Text>
       </View>
       <View
