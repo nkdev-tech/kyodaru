@@ -56,13 +56,16 @@ npm workspaces でモノレポ管理。
 **main へのマージが唯一の本番リリース点**。api と mobile を同じ main コミットから同時にトリガーすることで、片方だけ古い「バージョンずれ」を構造的に作れないようにする。
 
 ```
-日々の修正ブランチ ──PR──▶ release/<version> ──PR──▶ main ──▶ [CD発火]
+【日常】 日々の修正ブランチ・Dependabot ──PR──▶ develop（常設・Default branch）
+
+【リリース】 develop から release/<version> を作成 ──PR──▶ main ──▶ [CD発火]
 ```
 
-- **リリースブランチを切る** — `release/<version>`（例：`release/1.0.0`）。`<version>` は `api/package.json` の version
-- **日々の修正PRは release ブランチに向ける** — CI（api/mobile/orval-drift 等）と oasdiff（破壊的変更検知）は `release/**` でも走る
+- **develop は常設の統合ブランチ**（GitHubリポジトリの Default branch）。日々の修正PRとDependabot（version updates・security updates 両方）はここに向ける。`release/<version>` は都度作って消す一時ブランチなので、リリースが決まっていない期間の安定した向き先として develop を使う
+- **リリースブランチを切る** — `develop` から `release/<version>`（例：`release/1.0.0`）を作成する。`<version>` は `api/package.json` の version
+- CI（api/mobile/orval-drift 等）と oasdiff（破壊的変更検知）は `develop`・`release/**` でも走る
 - **まとまったら release → main にPRを出してマージ** — main への push で [ci.yml](.github/workflows/ci.yml) の CD ジョブが発火する
-  - CIジョブ（api/mobile/icon-wrapping/orval-drift）が全て通った場合のみ実行（`needs` ＋ `if: push かつ main` でゲート）
+  - CIジョブ（api/mobile/icon-wrapping/orval-drift）が全て通った場合のみ実行（`needs` ＋ `if: push かつ main` でゲート）。`develop`・`release/**` への push/PR ではデプロイは発火しない
   - `deploy-api`: `wrangler deploy`（数十秒）→ API 先行で反映
   - `deploy-mobile`: `eas build -p ios --profile production --auto-submit`（Apple審査を挟むので自然に API より遅い）→ TestFlight 提出
 - **順序保証** — API デプロイは wrangler で数十秒、mobile は EAS ビルド＋Apple審査で時間がかかるため、自然に「API が先、mobile が後」になり mobile が古い API を叩く事故を防ぐ
