@@ -9,14 +9,7 @@ updates:
       default-days: 7
 
   - package-ecosystem: npm
-    directory: /api
-    schedule:
-      interval: weekly
-    cooldown:
-      default-days: 7
-
-  - package-ecosystem: npm
-    directory: /mobile
+    directory: /
     schedule:
       interval: weekly
     cooldown:
