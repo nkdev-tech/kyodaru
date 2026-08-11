@@ -95,6 +95,7 @@ describe('ai', () => {
       { ...env, GEMINI_API_KEY: 'dummy-key' },
     )
     expect(res.status).toBe(400)
+    expect(getChatReply).toHaveBeenCalledTimes(0)
   })
 
   it('cannot get ai reply when messages count exceeds max length', async () => {
@@ -123,6 +124,7 @@ describe('ai', () => {
       { ...env, GEMINI_API_KEY: 'dummy-key' },
     )
     expect(res.status).toBe(400)
+    expect(getChatReply).toHaveBeenCalledTimes(0)
   })
 
   it('cannot get ai reply with empty messages', async () => {
@@ -142,6 +144,7 @@ describe('ai', () => {
       { ...env, GEMINI_API_KEY: 'dummy-key' },
     )
     expect(res.status).toBe(400)
+    expect(getChatReply).toHaveBeenCalledTimes(0)
   })
 
   it('cannot get ai reply without user', async () => {
