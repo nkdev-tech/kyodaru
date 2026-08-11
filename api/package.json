@@ -19,7 +19,7 @@
     "@google/genai": "^2.8.0",
     "@hono/swagger-ui": "^0.6.1",
     "@hono/zod-openapi": "^1.4.0",
-    "better-auth": "^1.6.19",
+    "better-auth": "^1.6.25",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.23",
     "semver": "^7.8.5",
