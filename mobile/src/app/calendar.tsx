@@ -96,7 +96,7 @@ function DayCell({
       className={cn(
         'h-14 w-[14.28%] gap-1 border p-1',
         currentMonth ? 'bg-card' : 'bg-muted/40',
-        isSelected ? 'border-primary bg-primary/10' : 'border-border',
+        isSelected ? 'border-primary bg-primary/10' : 'border-background',
         cornerClassName,
       )}
     >
