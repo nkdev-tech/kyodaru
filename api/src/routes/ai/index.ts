@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
+import type { AuthType } from '../../lib/auth'
 import { getChatReply } from '../../modules/ai/usecase/get-chat-reply'
 import {
   errorResBodySchema,
@@ -35,6 +36,14 @@ const getChatReplyRoute = createRoute({
       },
       description: 'Bad Request',
     },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResBodySchema,
+        },
+      },
+      description: 'Unauthorized',
+    },
     500: {
       content: {
         'application/json': {
@@ -46,27 +55,40 @@ const getChatReplyRoute = createRoute({
   },
 })
 
-const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>().openapi(
-  getChatReplyRoute,
-  async (c) => {
-    const data = c.req.valid('json')
-    try {
-      const res = await getChatReply(c.env.GEMINI_API_KEY, data)
-      return c.json(res, 200)
-    } catch (e) {
-      console.error(e)
-      return c.json(
-        {
-          success: false,
-          error: {
-            name: 'Internal Server Error',
-            message: 'サーバーエラーが発生しました',
-          },
+const app = new OpenAPIHono<{
+  Bindings: CloudflareBindings
+  Variables: AuthType
+}>().openapi(getChatReplyRoute, async (c) => {
+  const userId = c.get('user')?.id
+  if (userId == null) {
+    return c.json(
+      {
+        success: false,
+        error: {
+          name: 'Unauthorized',
+          message: '認証情報がありません',
         },
-        500,
-      )
-    }
-  },
-)
+      },
+      401,
+    )
+  }
+  const data = c.req.valid('json')
+  try {
+    const res = await getChatReply(c.env.GEMINI_API_KEY, data)
+    return c.json(res, 200)
+  } catch (e) {
+    console.error(e)
+    return c.json(
+      {
+        success: false,
+        error: {
+          name: 'Internal Server Error',
+          message: 'サーバーエラーが発生しました',
+        },
+      },
+      500,
+    )
+  }
+})
 
 export default app
