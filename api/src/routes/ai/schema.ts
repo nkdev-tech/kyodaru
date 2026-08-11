@@ -5,10 +5,11 @@ export const getChatReplyReqSchema = z.object({
     .array(
       z.object({
         role: z.enum(['user', 'model']).openapi({ example: 'user' }),
-        text: z.string().min(1).openapi({ example: '今日もだるい' }),
+        text: z.string().min(1).max(1000).openapi({ example: '今日もだるい' }),
       }),
     )
-    .min(1),
+    .min(1)
+    .max(40),
   pressure: z.number().nullable().optional().openapi({ example: 1014.9 }),
   temperature: z.number().nullable().optional().openapi({ example: 23.5 }),
   weather: z.string().nullable().optional().openapi({ example: '快晴' }),

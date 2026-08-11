@@ -132,7 +132,7 @@ describe('entries', () => {
     })
   })
 
-  it('cannnot create entry with invalid value', async () => {
+  it('cannnot create entry with empty rawText', async () => {
     vi.mocked(auth.api.getSession).mockResolvedValue({
       user: mockUser,
       session: mockSession,
@@ -143,6 +143,28 @@ describe('entries', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           rawText: '',
+          pressure: 1014.9,
+          temperature: 23.5,
+          weather: '快晴',
+        }),
+      }),
+      { ...env, GEMINI_API_KEY: 'dummy-key' },
+    )
+    expect(res.status).toBe(400)
+    expect(createEntry).toHaveBeenCalledTimes(0)
+  })
+
+  it('cannot create entry when rawText exceeds max length', async () => {
+    vi.mocked(auth.api.getSession).mockResolvedValue({
+      user: mockUser,
+      session: mockSession,
+    })
+    const res = await app.fetch(
+      new Request('http://localhost/api/entries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          rawText: 'あ'.repeat(50001),
           pressure: 1014.9,
           temperature: 23.5,
           weather: '快晴',

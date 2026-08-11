@@ -24,6 +24,7 @@ export async function getChatReply(
           data.temperature != null ? String(data.temperature) : '不明',
         )
         .replace('{{weather}}', () => data.weather ?? '不明'),
+      maxOutputTokens: 500,
     },
   })
   if (!response.text) {

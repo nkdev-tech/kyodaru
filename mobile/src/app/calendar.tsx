@@ -102,7 +102,10 @@ function DayCell({
     >
       <View className="flex-row items-center justify-between bg-transparent">
         <Text
-          className={cn('text-xs', isToday ? 'font-body-bold text-primary' : 'text-foreground/60')}
+          className={cn(
+            'text-xs',
+            isToday ? 'font-body-bold text-primary' : 'text-secondary-foreground',
+          )}
         >
           {day}
         </Text>
@@ -111,7 +114,7 @@ function DayCell({
             as={getWeatherIcon(info.weather)}
             size={16}
             fill="currentColor"
-            className="text-muted-foreground"
+            className="text-secondary-foreground"
           />
         )}
       </View>
@@ -201,7 +204,7 @@ export default function CalendarTab() {
             disabled={!canGoPrev}
             onPress={() => shiftMonth(-1)}
           >
-            <Icon as={ChevronLeft} size={18} className="text-muted-foreground" />
+            <Icon as={ChevronLeft} size={18} className="text-secondary-foreground" />
           </Button>
           <Text className="font-body-medium text-base">
             {year}年{month + 1}月
@@ -213,7 +216,7 @@ export default function CalendarTab() {
             disabled={!canGoNext}
             onPress={() => shiftMonth(1)}
           >
-            <Icon as={ChevronRight} size={18} className="text-muted-foreground" />
+            <Icon as={ChevronRight} size={18} className="text-secondary-foreground" />
           </Button>
         </View>
       </View>
@@ -229,7 +232,7 @@ export default function CalendarTab() {
               {WEEKDAYS.map((weekday) => (
                 <Text
                   key={weekday.label}
-                  className={cn('w-[14.28%] text-center text-xs', weekday.className)}
+                  className={cn('w-[14.28%] text-center text-sm', weekday.className)}
                 >
                   {weekday.label}
                 </Text>
@@ -256,10 +259,10 @@ export default function CalendarTab() {
 
       <View className="mt-3 flex-1">
         <View className="flex-row items-center gap-3">
-          <Text className="py-2 font-body-medium">
+          <Text className="py-2 font-body-bold">
             {selectedDay && format(new Date(year, month, selectedDay), 'M月d日(E)', { locale: ja })}
           </Text>
-          <Text className="text-sm text-muted-foreground">{details.length}件</Text>
+          <Text className="text-secondary-foreground">{details.length}件</Text>
         </View>
         <ScrollView
           className="flex-1"
@@ -275,7 +278,7 @@ export default function CalendarTab() {
                     <ConditionLabel level={detail.conditionLevel} />
                   </View>
                   <View className="bg-transparent">
-                    <Text className="text-xs text-muted-foreground">
+                    <Text className="text-sm text-secondary-foreground">
                       {format(new Date(detail.createdAt), 'HH:mm', { locale: ja })}
                     </Text>
                   </View>
@@ -287,27 +290,26 @@ export default function CalendarTab() {
                         as={getWeatherIcon(detail.weather)}
                         size={14}
                         fill="currentColor"
-                        className="text-muted-foreground"
+                        className="text-secondary-foreground"
                       />
-                      <Text className="text-sm text-muted-foreground">{detail.weather}</Text>
+                      <Text className="text-sm text-secondary-foreground">{detail.weather}</Text>
                     </View>
                     <View className="flex-row items-center gap-1 bg-transparent">
-                      <Icon as={Thermometer} size={12} className="text-muted-foreground" />
-                      <Text className="text-sm text-muted-foreground">
-                        {detail.temperature}{' '}
-                        <Text className="text-xs text-muted-foreground">℃</Text>
+                      <Icon as={Thermometer} size={12} className="text-secondary-foreground" />
+                      <Text className="text-sm text-secondary-foreground">
+                        {detail.temperature} ℃
                       </Text>
                     </View>
                     <View className="flex-row items-center gap-1 bg-transparent">
-                      <Icon as={Gauge} size={12} className="text-muted-foreground" />
-                      <Text className="text-sm text-muted-foreground">
-                        {detail.pressure} <Text className="text-xs text-muted-foreground">hPa</Text>
+                      <Icon as={Gauge} size={12} className="text-secondary-foreground" />
+                      <Text className="text-sm text-secondary-foreground">
+                        {detail.pressure} hPa
                       </Text>
                     </View>
                   </View>
                 )}
                 <View className="bg-transparent">
-                  <Text>{detail.summary}</Text>
+                  <Text className="text-sm">{detail.summary}</Text>
                 </View>
               </CardContent>
             </Card>

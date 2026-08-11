@@ -21,6 +21,7 @@ export async function summarizeChat(
         new Date().toISOString(),
       ),
       responseMimeType: 'application/json',
+      maxOutputTokens: 300,
     },
   })
   if (!response.text) {

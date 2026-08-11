@@ -67,7 +67,10 @@ export type GetApiEntries401 = {
 };
 
 export type PostApiEntriesBody = {
-  /** @minLength 1 */
+  /**
+     * @minLength 1
+     * @maxLength 50000
+     */
   rawText: string;
   /** @nullable */
   pressure?: number | null;
@@ -141,12 +144,18 @@ export const PostApiAiBodyMessagesItemRole = {
 
 export type PostApiAiBodyMessagesItem = {
   role: PostApiAiBodyMessagesItemRole;
-  /** @minLength 1 */
+  /**
+     * @minLength 1
+     * @maxLength 1000
+     */
   text: string;
 };
 
 export type PostApiAiBody = {
-  /** @minItems 1 */
+  /**
+     * @minItems 1
+     * @maxItems 40
+     */
   messages: PostApiAiBodyMessagesItem[];
   /** @nullable */
   pressure?: number | null;
@@ -168,6 +177,16 @@ export type PostApiAi400Error = {
 export type PostApiAi400 = {
   success: boolean;
   error: PostApiAi400Error;
+};
+
+export type PostApiAi401Error = {
+  name: string;
+  message: string;
+};
+
+export type PostApiAi401 = {
+  success: boolean;
+  error: PostApiAi401Error;
 };
 
 export type PostApiAi500Error = {
@@ -418,6 +437,11 @@ export type postApiAiResponse400 = {
   status: 400
 }
 
+export type postApiAiResponse401 = {
+  data: PostApiAi401
+  status: 401
+}
+
 export type postApiAiResponse500 = {
   data: PostApiAi500
   status: 500
@@ -426,7 +450,7 @@ export type postApiAiResponse500 = {
 export type postApiAiResponseSuccess = (postApiAiResponse200) & {
   headers: Headers;
 };
-export type postApiAiResponseError = (postApiAiResponse400 | postApiAiResponse500) & {
+export type postApiAiResponseError = (postApiAiResponse400 | postApiAiResponse401 | postApiAiResponse500) & {
   headers: Headers;
 };
 
@@ -454,7 +478,7 @@ export const postApiAi = async (postApiAiBody?: PostApiAiBody, options?: Request
 
 
 
-export const getPostApiAiMutationOptions = <TError = PostApiAi400 | PostApiAi500,
+export const getPostApiAiMutationOptions = <TError = PostApiAi400 | PostApiAi401 | PostApiAi500,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAi>>, TError,{data?: PostApiAiBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof postApiAi>>, TError,{data?: PostApiAiBody}, TContext> => {
 
@@ -483,9 +507,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type PostApiAiMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAi>>>
     export type PostApiAiMutationBody = PostApiAiBody | undefined
-    export type PostApiAiMutationError = PostApiAi400 | PostApiAi500
+    export type PostApiAiMutationError = PostApiAi400 | PostApiAi401 | PostApiAi500
 
-    export const usePostApiAi = <TError = PostApiAi400 | PostApiAi500,
+    export const usePostApiAi = <TError = PostApiAi400 | PostApiAi401 | PostApiAi500,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAi>>, TError,{data?: PostApiAiBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiAi>>,

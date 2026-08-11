@@ -2,16 +2,21 @@
   "expo": {
     "name": "今日もだるい",
     "slug": "kyodaru",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "mobile",
     "userInterfaceStyle": "automatic",
+    "locales": {
+      "ja": "./locales/ja.json"
+    },
     "ios": {
       "bundleIdentifier": "com.nkdevtech.kyodaru",
       "infoPlist": {
         "CFBundleDisplayName": "今日だる",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleDevelopmentRegion": "ja",
+        "CFBundleAllowMixedLocalizations": true
       }
     },
     "android": {
@@ -57,8 +62,7 @@
         {
           "label": "今日だる"
         }
-      ],
-      "expo-image"
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
