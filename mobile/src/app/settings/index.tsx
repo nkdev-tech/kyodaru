@@ -22,21 +22,21 @@ export default function SettingsTab() {
           className="h-20 w-20"
           resizeMode="contain"
         />
-        <Text className="text-sm text-muted-foreground">v{Constants.expoConfig?.version}</Text>
+        <Text className="text-secondary-foreground">v{Constants.expoConfig?.version}</Text>
       </View>
       <View className="flex-1 gap-2">
-        <Text className="text-muted-foreground">設定</Text>
+        <Text className="text-secondary-foreground">設定</Text>
         <Card>
           <CardContent>
             <Link href="/settings/account" asChild>
               <Pressable className="flex-row items-center justify-between bg-transparent">
                 <Text>アカウント設定</Text>
-                <Icon as={ChevronRight} size={18} className="text-muted-foreground" />
+                <Icon as={ChevronRight} size={18} className="text-secondary-foreground" />
               </Pressable>
             </Link>
           </CardContent>
         </Card>
-        <Text className="text-muted-foreground">その他</Text>
+        <Text className="text-secondary-foreground">その他</Text>
         <Card>
           <CardContent>
             <Pressable
@@ -44,7 +44,7 @@ export default function SettingsTab() {
               onPress={() => WebBrowser.openBrowserAsync(PRIVACY_POLICY_URL)}
             >
               <Text>プライバシーポリシー</Text>
-              <Icon as={ExternalLink} size={18} className="text-muted-foreground" />
+              <Icon as={ExternalLink} size={18} className="text-secondary-foreground" />
             </Pressable>
           </CardContent>
         </Card>

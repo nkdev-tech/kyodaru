@@ -93,7 +93,7 @@ export function Mascot({ message: overrideMessage }: { message?: string | null }
   return (
     <View className="items-center">
       <View className="rounded-full bg-card px-6 py-3">
-        <Text className="text-center text-sm text-card-foreground">{message}</Text>
+        <Text className="text-center text-card-foreground">{message}</Text>
       </View>
       <View
         style={{
@@ -108,7 +108,7 @@ export function Mascot({ message: overrideMessage }: { message?: string | null }
           marginTop: -1,
         }}
       />
-      <Animated.View style={[animatedStyle, { marginTop: 24 }]}>
+      <Animated.View style={[animatedStyle, { marginTop: 16 }]}>
         <Svg width={191} height={112} viewBox="34 46 124 73" accessibilityLabel="だるくも">
           <Path d={CLOUD_BODY} fill="#BFD2E6" />
           <Path d={HIGHLIGHT} fill="#FFFFFF" opacity={0.5} />

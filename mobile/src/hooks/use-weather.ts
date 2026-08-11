@@ -66,11 +66,30 @@ type WeatherInfo = {
   pressure: number | null;
   temperature: number | null;
   weather: string | null;
+  city: string | null;
 };
-const EMPTY_WEATHER: WeatherInfo = { pressure: null, temperature: null, weather: null };
+const EMPTY_WEATHER: WeatherInfo = {
+  pressure: null,
+  temperature: null,
+  weather: null,
+  city: null,
+};
 
 function timeout<T>(ms: number, fallback: T): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(fallback), ms));
+}
+
+async function getCity(latitude: number, longitude: number) {
+  try {
+    const addresses = await Promise.race([
+      Location.reverseGeocodeAsync({ latitude, longitude }),
+      timeout(5000, []),
+    ]);
+    return addresses[0]?.city ?? addresses[0]?.subregion ?? null;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 }
 
 async function fetchCurrentWeather(): Promise<WeatherInfo> {
@@ -83,7 +102,13 @@ async function fetchCurrentWeather(): Promise<WeatherInfo> {
   ]);
   if (!currentLocation) return EMPTY_WEATHER;
 
-  return getWeather(currentLocation.coords.latitude, currentLocation.coords.longitude);
+  const { latitude, longitude } = currentLocation.coords;
+  const [weather, city] = await Promise.all([
+    getWeather(latitude, longitude),
+    getCity(latitude, longitude),
+  ]);
+
+  return { ...weather, city };
 }
 
 export const weatherQueryOptions = queryOptions({

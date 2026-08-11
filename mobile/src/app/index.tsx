@@ -24,6 +24,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Textarea } from '@/components/ui/textarea';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
+import { useIsCompactHeight } from '@/hooks/use-compact-height';
 import { useWeather } from '@/hooks/use-weather';
 import { CircleQuestionMark, MessageCircleMore, Send, X } from 'lucide-react-native';
 import { CHAT_MESSAGES_MAX_COUNT, DAILY_ENTRY_LIMIT, MESSAGE_TEXT_MAX_LENGTH } from '@/lib/config';
@@ -37,6 +38,7 @@ export default function HomeScreen() {
   const [inputKey, setInputKey] = useState(0);
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>();
   const weatherInfo = useWeather();
+  const isCompactHeight = useIsCompactHeight();
   const insets = initialWindowMetrics?.insets ?? { top: 0, bottom: 0, left: 0, right: 0 };
   const queryClient = useQueryClient();
   const today = new Date();
@@ -158,7 +160,7 @@ export default function HomeScreen() {
           <View className="my-3 h-8 flex-row items-center">
             <Logo />
           </View>
-          <WeatherPanel weatherInfo={weatherInfo} today={today} />
+          <WeatherPanel weatherInfo={weatherInfo} />
           <View className="shrink-0 grow items-center justify-center gap-3 bg-transparent">
             {welcomeMessage !== undefined && <Mascot key={mascotKey} message={welcomeMessage} />}
             <View className="items-center gap-2">
@@ -175,26 +177,26 @@ export default function HomeScreen() {
                 <Text className="font-body-bold text-lg">タップしてぼやく</Text>
               </Button>
               <View className="flex-row items-center gap-1">
-                <Text className="text-sm text-muted-foreground">残り</Text>
-                <Text className="text-sm text-muted-foreground">
+                <Text className="text-secondary-foreground">残り</Text>
+                <Text className="text-secondary-foreground">
                   {DAILY_ENTRY_LIMIT - todayEntries.length} / {DAILY_ENTRY_LIMIT}
                 </Text>
-                <Text className="text-sm text-muted-foreground">回</Text>
+                <Text className="text-secondary-foreground">回</Text>
                 <Popover>
                   <PopoverTrigger hitSlop={{ top: 8, bottom: 16, left: 16, right: 16 }}>
-                    <Icon as={CircleQuestionMark} size={16} className="text-muted-foreground" />
+                    <Icon as={CircleQuestionMark} size={16} className="text-secondary-foreground" />
                   </PopoverTrigger>
                   <PopoverContent side="top" className="w-auto max-w-xs">
-                    <Text className="text-sm">日付が変わるとリセットされます</Text>
+                    <Text>日付が変わるとリセットされます</Text>
                   </PopoverContent>
                 </Popover>
               </View>
             </View>
           </View>
-          <View className="flex-[3]">
+          <View className={isCompactHeight ? 'flex-[6]' : 'flex-[2]'}>
             <View className="mb-2 flex-row items-center gap-2">
-              <Text className="font-body-medium">今日の記録</Text>
-              <Text className="text-sm text-muted-foreground">{todayEntries.length}件</Text>
+              <Text className="font-body-bold">今日の記録</Text>
+              <Text className="text-secondary-foreground">{todayEntries.length}件</Text>
             </View>
             <ScrollView
               className="flex-1"
@@ -208,7 +210,7 @@ export default function HomeScreen() {
                     <View className="flex-1 gap-1 bg-transparent">
                       <View className="flex-row items-center justify-between bg-transparent">
                         <ConditionLabel level={entry.conditionLevel} />
-                        <Text className="text-xs text-muted-foreground">
+                        <Text className="text-sm text-secondary-foreground">
                           {format(new Date(entry.createdAt), 'HH:mm', { locale: ja })}
                         </Text>
                       </View>
