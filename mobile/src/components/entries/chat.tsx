@@ -73,7 +73,7 @@ export function AIChat({ message, hideIcon, onSelect, disabled, isLoading }: Pro
             return (
               <Button
                 key={i}
-                variant="secondary"
+                variant="outline"
                 className="h-auto"
                 onPress={() => onSelect?.(option)}
                 disabled={disabled}
