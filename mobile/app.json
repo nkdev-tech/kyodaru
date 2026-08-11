@@ -62,8 +62,7 @@
         {
           "label": "今日だる"
         }
-      ],
-      "expo-image"
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

@@ -2,12 +2,10 @@ import '../global.css';
 
 import { useCallback, useEffect, useState } from 'react';
 import { focusManager, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import {
-  MPLUSRounded1c_400Regular,
-  MPLUSRounded1c_500Medium,
-  MPLUSRounded1c_700Bold,
-} from '@expo-google-fonts/m-plus-rounded-1c';
-import { ZenMaruGothic_700Bold } from '@expo-google-fonts/zen-maru-gothic';
+import { MPLUSRounded1c_400Regular } from '@expo-google-fonts/m-plus-rounded-1c/400Regular';
+import { MPLUSRounded1c_500Medium } from '@expo-google-fonts/m-plus-rounded-1c/500Medium';
+import { MPLUSRounded1c_700Bold } from '@expo-google-fonts/m-plus-rounded-1c/700Bold';
+import { ZenMaruGothic_700Bold } from '@expo-google-fonts/zen-maru-gothic/700Bold';
 import { PortalHost } from '@rn-primitives/portal';
 import { useFonts } from 'expo-font';
 import { ThemeProvider } from 'expo-router';
