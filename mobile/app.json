@@ -7,11 +7,16 @@
     "icon": "./assets/images/icon.png",
     "scheme": "mobile",
     "userInterfaceStyle": "automatic",
+    "locales": {
+      "ja": "./locales/ja.json"
+    },
     "ios": {
       "bundleIdentifier": "com.nkdevtech.kyodaru",
       "infoPlist": {
         "CFBundleDisplayName": "今日だる",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleDevelopmentRegion": "ja",
+        "CFBundleAllowMixedLocalizations": true
       }
     },
     "android": {
