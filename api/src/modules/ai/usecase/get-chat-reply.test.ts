@@ -37,6 +37,7 @@ describe('getChatReply', () => {
     expect(generateContent.mock.calls[0][0].config.systemInstruction).toContain(
       weather,
     )
+    expect(generateContent.mock.calls[0][0].config.maxOutputTokens).toBe(500)
   })
   it('can get reply without weather information', async () => {
     const generateContent = vi

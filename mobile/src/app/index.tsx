@@ -26,7 +26,7 @@ import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
 import { useWeather } from '@/hooks/use-weather';
 import { CircleQuestionMark, MessageCircleMore, Send, X } from 'lucide-react-native';
-import { DAILY_ENTRY_LIMIT } from '@/lib/config';
+import { CHAT_MESSAGES_MAX_COUNT, DAILY_ENTRY_LIMIT, MESSAGE_TEXT_MAX_LENGTH } from '@/lib/config';
 
 export default function HomeScreen() {
   const [chatVisible, setChatVisible] = useState(false);
@@ -75,6 +75,10 @@ export default function HomeScreen() {
   const handleSend = (text: string = draft) => {
     const trimmed = text.trim();
     if (!trimmed) return;
+    if (messages.length >= CHAT_MESSAGES_MAX_COUNT) {
+      toast.error('この会話は長さの上限に達しました。一度チャットを閉じてください');
+      return;
+    }
     const newMessage = [...messages, { role: 'user' as const, text: trimmed }];
     setMessages(newMessage);
     setDraft('');
@@ -269,6 +273,7 @@ export default function HomeScreen() {
               <Textarea
                 key={inputKey}
                 value={draft}
+                maxLength={MESSAGE_TEXT_MAX_LENGTH}
                 onChangeText={setDraft}
                 placeholder="いまのぐあい、ぼやいてみてください..."
                 className="h-auto min-h-10 flex-1 bg-card"

@@ -27,5 +27,6 @@ describe('summarizeChat', () => {
       summary: '頭全体がぼんやり痛む。立ち上がると目眩がする',
       conditionLevel: 4,
     })
+    expect(generateContent.mock.calls[0][0].config.maxOutputTokens).toBe(300)
   })
 })
