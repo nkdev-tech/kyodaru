@@ -19,12 +19,12 @@ export default function AccountScreen() {
     <SafeAreaView className="mx-5 flex-1 bg-background">
       <View className="my-3 h-8 flex-row items-center gap-2">
         <Button variant="ghost" size="icon" onPress={() => router.back()} className="rounded-full">
-          <Icon as={ChevronLeft} size={18} className="text-muted-foreground" />
+          <Icon as={ChevronLeft} size={18} className="text-secondary-foreground" />
         </Button>
         <Text className="font-body-bold text-xl">アカウント設定</Text>
       </View>
       <View className="flex-1 gap-2">
-        <Text className="text-muted-foreground">ユーザーID</Text>
+        <Text className="text-secondary-foreground">ユーザーID</Text>
         <Card>
           <CardContent className="flex-row items-center justify-between">
             <Text>{userId}</Text>
@@ -34,7 +34,7 @@ export default function AccountScreen() {
               onPress={() => copyToClipboard(userId)}
               className="rounded-full"
             >
-              <Icon as={Copy} size={18} className="text-muted-foreground" />
+              <Icon as={Copy} size={18} className="text-secondary-foreground" />
             </Button>
           </CardContent>
         </Card>
