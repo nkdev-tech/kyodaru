@@ -297,14 +297,14 @@ export default function CalendarTab() {
                     <View className="flex-row items-center gap-1 bg-transparent">
                       <Icon as={Thermometer} size={12} className="text-secondary-foreground" />
                       <Text className="text-sm text-secondary-foreground">
-                        {detail.temperature}
+                        {detail.temperature} ℃
                       </Text>
-                      <Text className="text-sm text-secondary-foreground">℃</Text>
                     </View>
                     <View className="flex-row items-center gap-1 bg-transparent">
                       <Icon as={Gauge} size={12} className="text-secondary-foreground" />
-                      <Text className="text-sm text-secondary-foreground">{detail.pressure}</Text>
-                      <Text className="text-sm text-secondary-foreground">hPa</Text>
+                      <Text className="text-sm text-secondary-foreground">
+                        {detail.pressure} hPa
+                      </Text>
                     </View>
                   </View>
                 )}

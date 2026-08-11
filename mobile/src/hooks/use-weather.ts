@@ -81,8 +81,11 @@ function timeout<T>(ms: number, fallback: T): Promise<T> {
 
 async function getCity(latitude: number, longitude: number) {
   try {
-    const [address] = await Location.reverseGeocodeAsync({ latitude, longitude });
-    return address?.city ?? address?.subregion ?? null;
+    const addresses = await Promise.race([
+      Location.reverseGeocodeAsync({ latitude, longitude }),
+      timeout(5000, []),
+    ]);
+    return addresses[0]?.city ?? addresses[0]?.subregion ?? null;
   } catch (e) {
     console.error(e);
     return null;

@@ -1,12 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  ScrollView,
-  useWindowDimensions,
-} from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
 import { SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
 import { useQueryClient } from '@tanstack/react-query';
 import * as SecureStore from 'expo-secure-store';
@@ -31,6 +24,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Textarea } from '@/components/ui/textarea';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
+import { useIsCompactHeight } from '@/hooks/use-compact-height';
 import { useWeather } from '@/hooks/use-weather';
 import { CircleQuestionMark, MessageCircleMore, Send, X } from 'lucide-react-native';
 import { CHAT_MESSAGES_MAX_COUNT, DAILY_ENTRY_LIMIT, MESSAGE_TEXT_MAX_LENGTH } from '@/lib/config';
@@ -44,8 +38,7 @@ export default function HomeScreen() {
   const [inputKey, setInputKey] = useState(0);
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>();
   const weatherInfo = useWeather();
-  const { height } = useWindowDimensions();
-  const isCompactHeight = height <= 700;
+  const isCompactHeight = useIsCompactHeight();
   const insets = initialWindowMetrics?.insets ?? { top: 0, bottom: 0, left: 0, right: 0 };
   const queryClient = useQueryClient();
   const today = new Date();
