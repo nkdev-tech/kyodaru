@@ -186,7 +186,7 @@ export default function HomeScreen() {
                   <PopoverTrigger hitSlop={{ top: 8, bottom: 16, left: 16, right: 16 }}>
                     <Icon as={CircleQuestionMark} size={16} className="text-secondary-foreground" />
                   </PopoverTrigger>
-                  <PopoverContent side="top" className="w-auto max-w-xs">
+                  <PopoverContent side="bottom" className="w-auto max-w-xs">
                     <Text>日付が変わるとリセットされます</Text>
                   </PopoverContent>
                 </Popover>
@@ -277,7 +277,7 @@ export default function HomeScreen() {
                 value={draft}
                 maxLength={MESSAGE_TEXT_MAX_LENGTH}
                 onChangeText={setDraft}
-                placeholder="いまのぐあい、ぼやいてみてください..."
+                placeholder="いま感じていることを入力..."
                 className="h-auto min-h-10 flex-1 bg-card"
               />
               <Button
