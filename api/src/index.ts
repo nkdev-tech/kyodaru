@@ -1,6 +1,6 @@
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
-import { httpServerIntegration, sentry } from '@sentry/hono/cloudflare'
+import { httpServerIntegration, sentry, setUser } from '@sentry/hono/cloudflare'
 import { type AuthType, auth } from './lib/auth'
 import ai from './routes/ai'
 import entries from './routes/entries'
@@ -17,9 +17,6 @@ app.use(
   sentry(app, (env) => ({
     dsn: env.SENTRY_DSN,
     environment: env.ENVIRONMENT ?? 'development',
-    dataCollection: {
-      httpBodies: [],
-    },
     integrations: [httpServerIntegration({ maxRequestBodySize: 'none' })],
   })),
 )
@@ -34,6 +31,7 @@ app.use('*', async (c, next) => {
   }
   c.set('user', session.user)
   c.set('session', session.session)
+  setUser({ id: session.user.id })
   await next()
 })
 

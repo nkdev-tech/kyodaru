@@ -23,6 +23,7 @@ vi.mock('../lib/auth', () => ({
 vi.mock('@sentry/hono/cloudflare', () => ({
   sentry: () => async (_c: unknown, next: () => Promise<unknown>) => next(),
   captureException: vi.fn(),
+  setUser: vi.fn(),
 }))
 
 describe('entries', () => {
