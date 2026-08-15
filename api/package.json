@@ -19,6 +19,8 @@
     "@google/genai": "^2.8.0",
     "@hono/swagger-ui": "^0.6.1",
     "@hono/zod-openapi": "^1.4.0",
+    "@sentry/cloudflare": "^10.69.0",
+    "@sentry/hono": "^10.69.0",
     "better-auth": "^1.6.25",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.23",
@@ -27,7 +29,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.16",
-    "@cloudflare/vitest-pool-workers": "^0.16.14",
+    "@cloudflare/vitest-pool-workers": "^0.20.3",
     "@types/node": "^25.9.1",
     "@types/semver": "^7.7.1",
     "dotenv": "^17.4.2",

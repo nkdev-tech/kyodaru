@@ -1,5 +1,6 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import type { AuthType } from '../../lib/auth'
+import { errorLog } from '../../lib/error'
 import { getChatReply } from '../../modules/ai/usecase/get-chat-reply'
 import {
   errorResBodySchema,
@@ -77,7 +78,7 @@ const app = new OpenAPIHono<{
     const res = await getChatReply(c.env.GEMINI_API_KEY, data)
     return c.json(res, 200)
   } catch (e) {
-    console.error(e)
+    errorLog(e)
     return c.json(
       {
         success: false,

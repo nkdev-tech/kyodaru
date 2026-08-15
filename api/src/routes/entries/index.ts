@@ -1,5 +1,6 @@
 import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
 import type { AuthType } from '../../lib/auth'
+import { errorLog } from '../../lib/error'
 import {
   createEntry,
   EntriesLimitError,
@@ -136,7 +137,6 @@ const app = new OpenAPIHono<{
       const res = await createEntry(userId, c.env.GEMINI_API_KEY, data)
       return c.json(res, 201)
     } catch (e) {
-      console.error(e)
       if (e instanceof EntriesLimitError) {
         return c.json(
           {
@@ -149,6 +149,7 @@ const app = new OpenAPIHono<{
           429,
         )
       }
+      errorLog(e)
       return c.json(
         {
           success: false,

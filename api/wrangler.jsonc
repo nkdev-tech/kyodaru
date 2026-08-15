@@ -12,5 +12,12 @@
       "migrations_dir": "drizzle"
     }
   ],
-  "rules": [{ "type": "Text", "globs": ["**/*.md"] }]
+  "rules": [{ "type": "Text", "globs": ["**/*.md"] }],
+  "vars": {
+    "ENVIRONMENT": "production"
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
 }
