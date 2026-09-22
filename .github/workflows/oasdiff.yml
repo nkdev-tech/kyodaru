@@ -65,7 +65,7 @@ jobs:
           else
             echo "bumped=false" >> "$GITHUB_OUTPUT"
           fi
-      - uses: oasdiff/oasdiff-action/breaking@291b6594ce617f22f49af5898ee038ed0b46e8fe # v0.1.5
+      - uses: oasdiff/oasdiff-action/breaking@5e81b5c380accc6b523f9d32a637ca630e33620b # v0.1.17
         if: steps.version-check.outputs.bumped == 'false'
         with:
           base: base-spec.json
