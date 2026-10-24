@@ -53,6 +53,7 @@ app.on(['POST', 'GET'], '/api/auth/*', (c) => {
   return auth.handler(c.req.raw)
 })
 
+// ルートを追加/変更したら、Cloudflare WAFの許可パスルール（API Path Allowlist - Block Unknown Routes）も更新すること
 app
   .route('/api/entries', entries)
   .route('/api/ai', ai)
