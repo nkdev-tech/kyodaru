@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, ScrollView } from 'react-native';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  ScrollView,
+  TextInput,
+} from 'react-native';
 import { SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
 import { useQueryClient } from '@tanstack/react-query';
 import * as SecureStore from 'expo-secure-store';
@@ -33,6 +40,7 @@ export default function HomeScreen() {
   const [chatVisible, setChatVisible] = useState(false);
   const [mascotKey, setMascotKey] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
+  const chatRef = useRef<TextInput>(null);
   const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([]);
   const [draft, setDraft] = useState('');
   const [inputKey, setInputKey] = useState(0);
@@ -230,7 +238,13 @@ export default function HomeScreen() {
           </View>
         </View>
       </SafeAreaView>
-      <Modal visible={chatVisible} animationType="slide" transparent onRequestClose={handleClose}>
+      <Modal
+        visible={chatVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={handleClose}
+        onShow={() => chatRef.current?.focus()}
+      >
         <View
           className="flex-1 bg-background"
           style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
@@ -274,6 +288,7 @@ export default function HomeScreen() {
             <View className="flex-row items-end gap-2 p-4">
               <Textarea
                 key={inputKey}
+                ref={chatRef}
                 value={draft}
                 maxLength={MESSAGE_TEXT_MAX_LENGTH}
                 onChangeText={setDraft}
