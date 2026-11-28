@@ -100,7 +100,7 @@ async function fetchCurrentWeather(): Promise<WeatherInfo> {
     Location.getCurrentPositionAsync({}),
     timeout(5000, null),
   ]);
-  if (!currentLocation) return EMPTY_WEATHER;
+  if (!currentLocation) throw new Error('Failed to get current location: timed out');
 
   const { latitude, longitude } = currentLocation.coords;
   const [weather, city] = await Promise.all([

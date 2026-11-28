@@ -38,7 +38,13 @@ import { authClient } from '@/lib/auth-client';
 SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({ fade: true, duration: 400 });
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    mutations: {
+      networkMode: 'always',
+    },
+  },
+});
 
 function isOnline(isConnected: boolean | undefined, isInternetReachable: boolean | undefined) {
   return isConnected !== false && isInternetReachable !== false;
@@ -113,9 +119,13 @@ export function AppContent() {
 
   useEffect(() => {
     onlineManager.setEventListener((setOnline) => {
-      Network.getNetworkStateAsync().then((state) => {
-        setOnline(isOnline(state.isConnected, state.isInternetReachable));
-      });
+      Network.getNetworkStateAsync()
+        .then((state) => {
+          setOnline(isOnline(state.isConnected, state.isInternetReachable));
+        })
+        .catch((e) => {
+          console.error(e);
+        });
 
       const subscription = Network.addNetworkStateListener(
         ({ isConnected, isInternetReachable }) => {
