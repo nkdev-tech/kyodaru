@@ -1,7 +1,12 @@
 import '../global.css';
 
 import { useCallback, useEffect, useState } from 'react';
-import { focusManager, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {
+  focusManager,
+  onlineManager,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query';
 import { MPLUSRounded1c_400Regular } from '@expo-google-fonts/m-plus-rounded-1c/400Regular';
 import { MPLUSRounded1c_500Medium } from '@expo-google-fonts/m-plus-rounded-1c/500Medium';
 import { MPLUSRounded1c_700Bold } from '@expo-google-fonts/m-plus-rounded-1c/700Bold';
@@ -9,6 +14,7 @@ import { ZenMaruGothic_700Bold } from '@expo-google-fonts/zen-maru-gothic/700Bol
 import { PortalHost } from '@rn-primitives/portal';
 import { useFonts } from 'expo-font';
 import { ThemeProvider } from 'expo-router';
+import * as Network from 'expo-network';
 import * as SplashScreen from 'expo-splash-screen';
 import {
   Alert,
@@ -33,6 +39,10 @@ SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({ fade: true, duration: 400 });
 
 const queryClient = new QueryClient();
+
+function isOnline(isConnected: boolean | undefined, isInternetReachable: boolean | undefined) {
+  return isConnected !== false && isInternetReachable !== false;
+}
 
 export function AppContent() {
   const [fontsLoaded, fontError] = useFonts({
@@ -99,6 +109,23 @@ export function AppContent() {
     return () => {
       subscription.remove();
     };
+  }, []);
+
+  useEffect(() => {
+    onlineManager.setEventListener((setOnline) => {
+      Network.getNetworkStateAsync().then((state) => {
+        setOnline(isOnline(state.isConnected, state.isInternetReachable));
+      });
+
+      const subscription = Network.addNetworkStateListener(
+        ({ isConnected, isInternetReachable }) => {
+          setOnline(isOnline(isConnected, isInternetReachable));
+        },
+      );
+      return () => {
+        subscription.remove();
+      };
+    });
   }, []);
 
   // フォント・セッション・バージョン確認・天気・最低表示時間がすべて揃うまで待つ。

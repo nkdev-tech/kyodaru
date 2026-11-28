@@ -58,7 +58,7 @@ async function getWeather(latitude?: number, longitude?: number) {
     };
   } catch (e) {
     console.error(e);
-    return { pressure: null, temperature: null, weather: null };
+    throw e;
   }
 }
 
